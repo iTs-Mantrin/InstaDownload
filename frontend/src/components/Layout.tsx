@@ -132,17 +132,77 @@ export default function Layout({ children }: { children: ReactNode }) {
       </div>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-sm text-slate-500 dark:text-slate-500 transition-colors">
+      <footer className="border-t border-slate-200 dark:border-slate-800 pt-12 pb-8 text-sm text-slate-500 dark:text-slate-500 transition-colors">
         <div className="max-w-6xl mx-auto px-4">
-          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4">
-            <Link to="/youtube-mp3" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">YouTube MP3</Link>
-            <Link to="/instagram-story" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Instagram Story</Link>
-            <Link to="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</Link>
-            <Link to="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
-            <Link to="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
-            <Link to="/dmca" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">DMCA</Link>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8 mb-10">
+            {/* Brand */}
+            <div className="col-span-2 md:col-span-1">
+              <Link to="/" className="text-lg font-bold text-amber-500 dark:text-amber-400 tracking-tight">
+                InstaDownload
+              </Link>
+              <p className="mt-2 text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                Download YouTube videos, MP3 audio, Instagram reels, posts, stories, and profile pictures — fast, free, and private.
+              </p>
+            </div>
+
+            {/* Tools */}
+            <div>
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Tools</h3>
+              <ul className="space-y-2">
+                <li><Link to="/youtube" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">YouTube Downloader</Link></li>
+                <li><Link to="/youtube-mp3" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">YouTube to MP3</Link></li>
+                <li><Link to="/instagram" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Instagram Downloader</Link></li>
+                <li><Link to="/instagram-story" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Instagram Story</Link></li>
+              </ul>
+            </div>
+
+            {/* YouTube Guides */}
+            <div>
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">YouTube Guides</h3>
+              <ul className="space-y-2">
+                <li><Link to="/youtube" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Download YouTube Videos</Link></li>
+                <li><Link to="/youtube-mp3" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Convert YouTube to MP3</Link></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">Download 4K Videos</span></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">YouTube Shorts Downloader</span></li>
+              </ul>
+            </div>
+
+            {/* Instagram Guides */}
+            <div>
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Instagram Guides</h3>
+              <ul className="space-y-2">
+                <li><Link to="/instagram" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Download Posts & Reels</Link></li>
+                <li><Link to="/instagram-story" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Download Stories</Link></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">Download Profile Pictures</span></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">Download IGTV Videos</span></li>
+              </ul>
+            </div>
+
+            {/* More Platforms */}
+            <div>
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">More Platforms</h3>
+              <ul className="space-y-2">
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">Facebook Downloader</span></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">TikTok Downloader</span></li>
+                <li><span className="text-slate-400 dark:text-slate-600 cursor-default">Pinterest Downloader</span></li>
+              </ul>
+            </div>
+
+            {/* Legal & Support */}
+            <div>
+              <h3 className="font-semibold text-slate-700 dark:text-slate-300 mb-3">Legal</h3>
+              <ul className="space-y-2">
+                <li><Link to="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link></li>
+                <li><Link to="/dmca" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">DMCA</Link></li>
+                <li className="mt-3"><Link to="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact Us</Link></li>
+              </ul>
+            </div>
           </div>
-          <p className="text-center">&copy; {new Date().getFullYear()} InstaDownload. Built with yt-dlp. Not affiliated with YouTube or Instagram.</p>
+
+          <div className="border-t border-slate-200 dark:border-slate-800 pt-6 text-center text-xs text-slate-400 dark:text-slate-600">
+            <p>&copy; {new Date().getFullYear()} InstaDownload. Built with yt-dlp. Not affiliated with YouTube or Instagram.</p>
+          </div>
         </div>
       </footer>
     </div>

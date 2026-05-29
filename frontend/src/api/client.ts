@@ -19,12 +19,23 @@ export interface DownloadResponse {
   source: string
 }
 
+export interface FormatInfo {
+  format_id: string
+  height: number | null
+  ext: string
+  filesize: number | null
+  vcodec: string
+  acodec: string
+  tbr: number | null
+}
+
 export interface PreviewInfo {
   title: string
   duration: number
   uploader: string
   webpage_url: string
   thumbnail: string
+  formats: FormatInfo[]
 }
 
 // ── Route helper ──────────────────────────────────────────────
