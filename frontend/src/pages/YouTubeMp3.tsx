@@ -3,6 +3,7 @@ import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl, res
 import type { ProgressState, PreviewInfo } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 import Seo from '../components/Seo.tsx'
 
 export default function YouTubeMp3() {
@@ -89,7 +90,7 @@ export default function YouTubeMp3() {
         keywords={['youtube to mp3', 'convert youtube to mp3', 'youtube audio downloader', 'extract audio from youtube']}
       />
 
-      <AdUnit className="mb-6" />
+      <AdUnit className="mb-6" slot={ADS.BANNER_TOP} />
 
       <div className="max-w-xl mx-auto space-y-8">
         <div className="text-center space-y-2">
@@ -176,7 +177,7 @@ export default function YouTubeMp3() {
         )}
       </div>
 
-      <AdUnit className="max-w-3xl mx-auto" />
+      <AdUnit className="max-w-3xl mx-auto" slot={ADS.BANNER_BOTTOM} />
 
       <section className="max-w-3xl mx-auto prose dark:prose-invert">
         <h2 className="text-2xl font-bold mb-4">How to Convert YouTube to MP3</h2>

@@ -1,4 +1,6 @@
 import Seo from '../components/Seo.tsx'
+import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 export default function Dmca() {
   return (
@@ -8,6 +10,8 @@ export default function Dmca() {
         description="InstaDownload respects intellectual property rights. Submit DMCA takedown requests here."
         path="/dmca"
       />
+
+      <AdUnit className="max-w-2xl mx-auto mb-6" slot={ADS.BANNER_TOP} />
 
       <h1 className="text-3xl font-bold">DMCA Notice & Takedown</h1>
       <p className="text-sm text-slate-500 dark:text-slate-400">Last updated: May 2026</p>
@@ -52,6 +56,8 @@ export default function Dmca() {
           and your consent to jurisdiction in your local federal district court.
         </p>
       </section>
+
+      <AdUnit className="max-w-2xl mx-auto mt-8" slot={ADS.BANNER_BOTTOM} />
     </div>
   )
 }

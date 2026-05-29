@@ -1,4 +1,6 @@
 import Seo from '../components/Seo.tsx'
+import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 export default function Privacy() {
   return (
@@ -8,6 +10,8 @@ export default function Privacy() {
         description="InstaDownload respects your privacy. Read our privacy policy to understand how we handle your data."
         path="/privacy"
       />
+
+      <AdUnit className="max-w-2xl mx-auto mb-6" slot={ADS.BANNER_TOP} />
 
       <h1 className="text-3xl font-bold">Privacy Policy</h1>
       <p className="text-sm text-slate-500 dark:text-slate-400">Last updated: May 2026</p>
@@ -50,6 +54,8 @@ export default function Privacy() {
           <a href="/contact" className="text-blue-600 hover:underline">contact us</a>.
         </p>
       </section>
+
+      <AdUnit className="max-w-2xl mx-auto mt-8" slot={ADS.BANNER_BOTTOM} />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { startDownload, getProgress, getDownloadUrl, cancelTask, fetchInstagramS
 import type { ProgressState } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 type Tab = 'post' | 'stories' | 'profile'
 
@@ -11,7 +12,7 @@ export default function InstagramPage() {
 
   return (
     <div className="space-y-6">
-      <AdUnit className="mb-6" />
+      <AdUnit className="mb-6" slot={ADS.BANNER_TOP} />
 
       <div className="max-w-xl mx-auto space-y-6">
         <div className="text-center">
@@ -40,6 +41,8 @@ export default function InstagramPage() {
         {tab === 'stories' && <StoriesDownload />}
         {tab === 'profile' && <ProfilePic />}
       </div>
+
+      <AdUnit className="max-w-3xl mx-auto mt-8" slot={ADS.BANNER_BOTTOM} />
     </div>
   )
 }

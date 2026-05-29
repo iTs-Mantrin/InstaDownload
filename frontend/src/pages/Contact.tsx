@@ -1,5 +1,6 @@
 import Seo from '../components/Seo.tsx'
 import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 export default function Contact() {
   return (
@@ -9,6 +10,8 @@ export default function Contact() {
         description="Get in touch with the InstaDownload team. We'll respond within 24 hours."
         path="/contact"
       />
+
+      <AdUnit className="max-w-2xl mx-auto mb-6" slot={ADS.BANNER_TOP} />
 
       <h1 className="text-3xl font-bold">Contact Us</h1>
       <p className="text-slate-600 dark:text-slate-400">
@@ -57,7 +60,7 @@ export default function Contact() {
         </button>
       </form>
 
-      <AdUnit className="max-w-2xl mx-auto" />
+      <AdUnit className="max-w-2xl mx-auto" slot={ADS.BANNER_BOTTOM} />
     </div>
   )
 }

@@ -3,6 +3,7 @@ import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl, res
 import type { ProgressState, PreviewInfo } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 export default function YouTubePage() {
   const [url, setUrl] = useState('')
@@ -84,7 +85,7 @@ export default function YouTubePage() {
 
   return (
     <div className="space-y-6">
-      <AdUnit className="mb-6" />
+      <AdUnit className="mb-6" slot={ADS.BANNER_TOP} />
 
       <div className="max-w-xl mx-auto space-y-6">
         <div className="text-center">
@@ -186,6 +187,8 @@ export default function YouTubePage() {
           </a>
         )}
       </div>
+
+      <AdUnit className="max-w-3xl mx-auto mt-8" slot={ADS.BANNER_BOTTOM} />
     </div>
   )
 }

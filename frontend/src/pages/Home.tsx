@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import AdUnit from '../components/AdUnit.tsx'
+import { ADS } from '../ads.ts'
 import Seo from '../components/Seo.tsx'
 
 function detectSource(url: string): string | null {
@@ -99,7 +100,7 @@ export default function Home() {
       </section>
 
       {/* Ad banner */}
-      <AdUnit className="max-w-3xl mx-auto" />
+      <AdUnit className="max-w-3xl mx-auto" slot={ADS.BANNER_TOP} />
 
       {/* Features */}
       <section className="grid md:grid-cols-3 gap-6">
@@ -116,7 +117,7 @@ export default function Home() {
       </section>
 
       {/* Bottom ad */}
-      <AdUnit className="max-w-3xl mx-auto" />
+      <AdUnit className="max-w-3xl mx-auto" slot={ADS.BANNER_BOTTOM} />
 
       {/* FAQ */}
       <section className="max-w-3xl mx-auto space-y-6">
