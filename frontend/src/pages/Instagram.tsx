@@ -1,7 +1,8 @@
 import { useState, useRef, useCallback } from 'react'
-import { startDownload, getProgress, getDownloadUrl, cancelTask, fetchInstagramStories, fetchProfilePic } from '../api/client.ts'
+import { startDownload, getProgress, getDownloadUrl, cancelTask, fetchInstagramStories, getProfilePicUrl } from '../api/client.ts'
 import type { ProgressState } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
+import AdUnit from '../components/AdUnit.tsx'
 
 type Tab = 'post' | 'stories' | 'profile'
 
@@ -9,32 +10,36 @@ export default function InstagramPage() {
   const [tab, setTab] = useState<Tab>('post')
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
-      <div className="text-center">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Instagram Downloader
-        </h1>
-        <p className="text-slate-400 mt-1">Download posts, reels, stories & profile pictures</p>
-      </div>
+    <div className="space-y-6">
+      <AdUnit className="mb-6" />
 
-      {/* Sub-tabs */}
-      <div className="flex gap-1 bg-slate-800 rounded-xl p-1">
-        {(['post', 'stories', 'profile'] as const).map((t) => (
-          <button
-            key={t}
-            onClick={() => setTab(t)}
-            className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
-              tab === t ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
-            }`}
-          >
-            {t === 'post' ? 'Post / Reel' : t}
-          </button>
-        ))}
-      </div>
+      <div className="max-w-xl mx-auto space-y-6">
+        <div className="text-center">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            Instagram Downloader
+          </h1>
+          <p className="text-slate-500 dark:text-slate-400 mt-1">Download posts, reels, stories & profile pictures</p>
+        </div>
 
-      {tab === 'post' && <PostReelDownload />}
-      {tab === 'stories' && <StoriesDownload />}
-      {tab === 'profile' && <ProfilePic />}
+        {/* Sub-tabs */}
+        <div className="flex gap-1 rounded-xl p-1 border border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 transition-colors">
+          {(['post', 'stories', 'profile'] as const).map((t) => (
+            <button
+              key={t}
+              onClick={() => setTab(t)}
+              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors ${
+                tab === t ? 'bg-purple-600 text-white' : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white'
+              }`}
+            >
+              {t === 'post' ? 'Post / Reel' : t}
+            </button>
+          ))}
+        </div>
+
+        {tab === 'post' && <PostReelDownload />}
+        {tab === 'stories' && <StoriesDownload />}
+        {tab === 'profile' && <ProfilePic />}
+      </div>
     </div>
   )
 }
@@ -101,18 +106,18 @@ function PostReelDownload() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1.5 text-slate-300">Post / Reel URL</label>
+        <label className="block text-sm font-medium mb-1.5 text-slate-600 dark:text-slate-300">Post / Reel URL</label>
         <input
           type="text"
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           onKeyDown={handleKeyDown}
           placeholder="https://instagram.com/p/... or /reel/..."
-          className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
         />
       </div>
 
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
 
       <div className="flex gap-3">
         <button
@@ -123,7 +128,7 @@ function PostReelDownload() {
           {loading ? 'Starting...' : 'Download'}
         </button>
         {taskId && (
-          <button onClick={handleCancel} className="px-4 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-colors">
+          <button onClick={handleCancel} className="px-4 py-3 bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-800 dark:text-white rounded-xl font-medium transition-colors">
             Cancel
           </button>
         )}
@@ -167,16 +172,16 @@ function StoriesDownload() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1.5 text-slate-300">Username</label>
+        <label className="block text-sm font-medium mb-1.5 text-slate-600 dark:text-slate-300">Username</label>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="e.g. natgeo"
-          className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
         />
       </div>
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
       <button
         onClick={handleFetch}
         disabled={loading}
@@ -185,7 +190,7 @@ function StoriesDownload() {
         {loading ? 'Fetching...' : 'Fetch Stories'}
       </button>
       {stories.length > 0 && (
-        <p className="text-green-400 text-sm">{stories.length} stories found</p>
+        <p className="text-green-600 dark:text-green-400 text-sm">{stories.length} stories found</p>
       )}
     </div>
   )
@@ -203,7 +208,10 @@ function ProfilePic() {
     setPicUrl('')
     setLoading(true)
     try {
-      const url = await fetchProfilePic(username.trim())
+      const url = getProfilePicUrl(username.trim())
+      // Verify it loads by checking headers
+      const res = await fetch(url, { method: 'HEAD' })
+      if (!res.ok) throw new Error('Profile picture not found')
       setPicUrl(url)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch profile picture')
@@ -215,16 +223,16 @@ function ProfilePic() {
   return (
     <div className="space-y-4">
       <div>
-        <label className="block text-sm font-medium mb-1.5 text-slate-300">Username</label>
+        <label className="block text-sm font-medium mb-1.5 text-slate-600 dark:text-slate-300">Username</label>
         <input
           type="text"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
           placeholder="e.g. natgeo"
-          className="w-full px-4 py-3 rounded-xl bg-slate-800 border border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          className="w-full px-4 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-colors"
         />
       </div>
-      {error && <p className="text-red-400 text-sm">{error}</p>}
+      {error && <p className="text-red-500 dark:text-red-400 text-sm">{error}</p>}
       <button
         onClick={handleFetch}
         disabled={loading}
@@ -234,12 +242,12 @@ function ProfilePic() {
       </button>
       {picUrl && (
         <div className="flex flex-col items-center gap-3">
-          <img src={picUrl} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-slate-700" />
+          <img src={picUrl} alt="Profile" className="w-32 h-32 rounded-full object-cover border-4 border-slate-200 dark:border-slate-700" />
           <a
             href={picUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-400 hover:text-blue-300 text-sm underline"
+            className="text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300 text-sm underline"
           >
             Open full size
           </a>

@@ -65,22 +65,13 @@ export async function previewUrl(url: string, source: string): Promise<PreviewIn
 }
 
 export async function fetchInstagramStories(username: string): Promise<string[]> {
-  const res = await fetch(`${API_BASE}/instagram/stories`, {
+  const res = await fetch(`${API_BASE}/instagram/stories?username=${encodeURIComponent(username)}`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username }),
   })
   if (!res.ok) throw new Error('Stories fetch failed')
   return res.json()
 }
 
-export async function fetchProfilePic(username: string): Promise<string> {
-  const res = await fetch(`${API_BASE}/instagram/profile-pic`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ username }),
-  })
-  if (!res.ok) throw new Error('Profile pic fetch failed')
-  const data = await res.json()
-  return data.url
+export function getProfilePicUrl(username: string): string {
+  return `${API_BASE}/instagram/profile-pic/${encodeURIComponent(username)}`
 }
