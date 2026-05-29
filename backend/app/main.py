@@ -11,7 +11,7 @@ from fastapi.staticfiles import StaticFiles
 
 from app.config import get_settings
 from app.database import init_db, close_db
-from app.routers import youtube, instagram
+from app.routers import youtube, instagram, translate
 from app.services.cleanup_service import CleanupService
 
 settings = get_settings()
@@ -49,6 +49,7 @@ app.add_middleware(
 # API routers
 app.include_router(youtube.router)
 app.include_router(instagram.router)
+app.include_router(translate.router)
 
 
 # Health check

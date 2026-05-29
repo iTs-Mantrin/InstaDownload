@@ -1,0 +1,317 @@
+{
+  "lang": "English",
+  "brand": "InstaDownload",
+  "nav": {
+    "home": "Hogar",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "pinterest": "Pinterest",
+    "youtubeSub": {
+      "downloader": "YouTube Downloader",
+      "videoDownloader": "Descargador de vídeos de YouTube",
+      "shortsDownloader": "YouTube Shorts Downloader",
+      "mp3": "YouTube to MP3",
+      "audioDownloader": "Descargador de audio de YouTube",
+      "songDownloader": "Descargador de canciones de YouTube",
+      "toMp4": "YouTube a MP4",
+      "musicDownloader": "Descargador de música de YouTube",
+      "moviesDownloader": "Descargador de películas de YouTube"
+    },
+    "instagramSub": {
+      "downloader": "Instagram Downloader",
+      "videoDownloader": "Descargador de vídeos de Instagram",
+      "photoDownloader": "Descargador de fotos de Instagram",
+      "reelsDownloader": "Descargador de carretes de Instagram",
+      "story": "Instagram Story Downloader",
+      "carouselDownloader": "Descargador de carrusel de Instagram",
+      "profileDownloader": "Descargador de perfiles de Instagram"
+    }
+  },
+  "theme": {
+    "light": "Cambiar al modo de luz",
+    "dark": "Cambiar al modo oscuro"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español",
+    "hi": "हिन्दी",
+    "ar": "العربية",
+    "pt": "Português",
+    "fr": "Français",
+    "de": "Deutsch",
+    "id": "Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "vi": "Tiếng Việt",
+    "it": "Italiano",
+    "tr": "Türkçe",
+    "bn": "বাংলা",
+    "ta": "தமிழ்",
+    "pa": "ਪੰਜਾਬੀ",
+    "ur": "اُردُو",
+    "te": "తెలుగు",
+    "ms": "Malaysia",
+    "th": "ภาษาไทย",
+    "ru": "Русский",
+    "nl": "Nederlands",
+    "zh": "中文"
+  },
+  "hero": {
+    "title": "Todo en uno gratuito",
+    "titleHighlight": "Descargador de vídeos",
+    "subtitle": "Descarga videos, reels, historias y audio de YouTube, Instagram, Facebook, TikTok y más. Rápido, gratuito y privado. No se necesita cuenta.",
+    "inputPlaceholder": "Pegue una URL de YouTube o Instagram...",
+    "paste": "Pasta",
+    "go": "Ir"
+  },
+  "tools": {
+    "youtube": "YouTube",
+    "youtubeMp3": "youtube mp3",
+    "instagram": "Instagram",
+    "instagramStory": "Instagram Story"
+  },
+  "steps": {
+    "heading": "¿Cómo descargar?",
+    "step1": {
+      "title": "Copia la URL",
+      "desc": "Abre YouTube o Instagram, busca el vídeo, reel o foto que desees y copia su enlace."
+    },
+    "step2": {
+      "title": "Pega el enlace",
+      "desc": "Pegue la URL en el campo de entrada de arriba. Nuestra herramienta detectará automáticamente la fuente y mostrará una vista previa."
+    },
+    "step3": {
+      "title": "Download",
+      "desc": "Elija su calidad preferida y haga clic en el botón Descargar. El archivo se guarda directamente en su dispositivo."
+    }
+  },
+  "features": {
+    "quality": {
+      "title": "Alta calidad",
+      "desc": "Descarga hasta resolución 4K. Elige tu formato y calidad preferidos."
+    },
+    "audio": {
+      "title": "Sólo audio",
+      "desc": "Extraiga audio MP3 de cualquier vídeo de YouTube con una calidad de hasta 320 kbps."
+    },
+    "fast": {
+      "title": "Rápido y Gratis",
+      "desc": "Desarrollado por yt-dlp. Sin límites, sin registros, sin seguimiento. De uso completamente gratuito."
+    }
+  },
+  "platforms": {
+    "heading": "Plataformas compatibles",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "tiktok",
+    "pinterest": "Pinterest"
+  },
+  "faq": {
+    "heading": "Preguntas frecuentes",
+    "q1": {
+      "q": "¿InstaDownload es gratuito?",
+      "a": "Sí, completamente gratis. Sin registros, sin costos ocultos, sin niveles premium."
+    },
+    "q2": {
+      "q": "¿Necesito una cuenta?",
+      "a": "No se requiere cuenta ni inicio de sesión. Simplemente pegue un enlace y descárguelo."
+    },
+    "q3": {
+      "q": "¿Qué opciones de calidad están disponibles?",
+      "a": "YouTube: hasta 1080p (y 4K si está disponible). Elija entre 360p, 480p, 720p, 1080p o Máximo. Instagram: mejor calidad disponible."
+    },
+    "q4": {
+      "q": "¿Puedo descargar solo el audio?",
+      "a": "¡Sí! Utilice la opción MP3 de YouTube para extraer audio a 128-320 kbps."
+    },
+    "q5": {
+      "q": "¿Cuánto tiempo se almacenan los archivos?",
+      "a": "Los archivos descargados se eliminan automáticamente de nuestros servidores en un plazo de 30 minutos para su privacidad."
+    },
+    "q6": {
+      "q": "¿Es seguro?",
+      "a": "Todas las conexiones están cifradas a través de HTTPS. No rastreamos, almacenamos ni compartimos sus descargas."
+    },
+    "q7": {
+      "q": "¿Qué plataformas soportas?",
+      "a": "Actualmente admitimos YouTube, Instagram, Facebook, TikTok y Pinterest. ¡Más plataformas próximamente!"
+    },
+    "q8": {
+      "q": "¿Instagram admite historias?",
+      "a": "Sí, puedes descargar historias de Instagram ingresando un nombre de usuario. Nota: las historias requieren que la cuenta no sea privada."
+    },
+    "q9": {
+      "q": "¿Puedo descargar fotos de perfil de Instagram?",
+      "a": "¡Sí! Ingrese cualquier nombre de usuario de Instagram y buscaremos su foto de perfil actual en HD."
+    },
+    "q10": {
+      "q": "¿Puedo descargar vídeos de Facebook?",
+      "a": "La descarga de videos de Facebook estará disponible pronto. Mientras tanto, prueba nuestros descargadores de YouTube o Instagram."
+    },
+    "q11": {
+      "q": "¿Puedo descargar vídeos de TikTok?",
+      "a": "La descarga de videos de TikTok llegará pronto. Nuestra plataforma admitirá la descarga de videos de TikTok sin marcas de agua."
+    }
+  },
+  "youtubeDownloader": {
+    "urlLabel": "URL del vídeo",
+    "urlPlaceholder": "https://youtube.com/watch?v=... o https://youtu.be/...",
+    "fetching": "Obteniendo información del vídeo...",
+    "chooseQuality": "Elige calidad:",
+    "bestQuality": "Mejor calidad",
+    "bestQualityDesc": "Escojamos lo mejor disponible",
+    "recommended": "Recomendado",
+    "fast": "Rápido",
+    "download": "Download",
+    "downloading": "Descargando...",
+    "cancel": "Cancelar descarga",
+    "downloadFile": "Download File",
+    "pleaseEnterUrl": "Please enter a URL"
+  },
+  "igDownloader": {
+    "urlLabel": "URL de publicación/carrete",
+    "urlPlaceholder": "https://instagram.com/p/... o /reel/...",
+    "download": "Download",
+    "starting": "A partir de...",
+    "cancel": "Cancelar",
+    "downloadFile": "Descargar archivo",
+    "pleaseEnterUrl": "Por favor ingresa una URL"
+  },
+  "youtubeMp3": {
+    "title": "YouTube to MP3 Converter",
+    "subtitle": "Extract high-quality audio from any YouTube video",
+    "urlLabel": "URL del vídeo de YouTube",
+    "urlPlaceholder": "https://www.youtube.com/watch?v=...",
+    "qualityLabel": "Calidad de audio",
+    "qualityStandard": "128 kbps (estándar)",
+    "qualityHigh": "192 kbps (alto)",
+    "qualityUltra": "320 kbps (ultra)",
+    "convert": "Convertir a MP3",
+    "processing": "Tratamiento...",
+    "downloadMp3": "Descargar MP3",
+    "convertAnother": "Convertir otro vídeo",
+    "cancel": "Cancelar conversión",
+    "pleaseEnterUrl": "Por favor ingresa una URL de YouTube"
+  },
+  "instagram": {
+    "title": "Instagram Downloader",
+    "subtitle": "Download posts, reels, stories & profile pictures",
+    "tabPost": "Publicación / Carrete",
+    "tabStories": "Historias",
+    "tabProfile": "Perfil",
+    "stories": {
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "e.g. natgeo",
+      "fetch": "Fetch Stories",
+      "fetching": "Fetching...",
+      "downloadFile": "Descargar archivo de historias",
+      "enterUsername": "Enter a username"
+    },
+    "profile": {
+      "usernameLabel": "Nombre de usuario",
+      "usernamePlaceholder": "p.ej. nadar",
+      "getProfilePic": "Obtener foto de perfil",
+      "fetching": "Atractivo...",
+      "enterUsername": "Introduzca un nombre de usuario",
+      "openFullSize": "Abrir en tamaño completo"
+    }
+  },
+  "instagramStory": {
+    "title": "Instagram Story Downloader",
+    "subtitle": "Download active stories from any public Instagram account",
+    "usernameLabel": "Nombre de usuario de Instagram",
+    "usernamePlaceholder": "nombre de usuario",
+    "fetch": "Buscar historias",
+    "fetching": "Recuperando historias...",
+    "downloadArchive": "Descargar archivo de historias",
+    "downloadDesc": "Todas las historias activas se han agrupado en un único archivo ZIP para su comodidad.",
+    "pleaseEnterUsername": "Por favor ingrese un nombre de usuario de Instagram"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "¿Tiene alguna pregunta, sugerencia o encontró un error? Complete el siguiente formulario y nos comunicaremos con usted dentro de las 24 horas.",
+    "nameLabel": "Nombre",
+    "namePlaceholder": "Su nombre",
+    "emailLabel": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "messageLabel": "Mensaje",
+    "messagePlaceholder": "¿Cómo podemos ayudarte?",
+    "sendMessage": "Enviar mensaje"
+  },
+  "pages": {
+    "youtube": {
+      "title": "YouTube Downloader",
+      "subtitle": "Descargar vídeos o extraer audio"
+    },
+    "youtubeMp3": {
+      "title": "Convertidor de YouTube a MP3",
+      "subtitle": "Extrae audio de alta calidad de cualquier vídeo de YouTube"
+    },
+    "instagram": {
+      "title": "Instagram Downloader",
+      "subtitle": "Descargar publicaciones, reels, historias e imágenes de perfil"
+    },
+    "instagramStory": {
+      "title": "Descargador de historias de Instagram",
+      "subtitle": "Descarga historias activas desde cualquier cuenta pública de Instagram"
+    },
+    "contact": {
+      "title": "Contact Us"
+    },
+    "privacy": {
+      "title": "Privacy Policy"
+    },
+    "terms": {
+      "title": "Terms of Service"
+    },
+    "dmca": {
+      "title": "Aviso y eliminación de DMCA"
+    }
+  },
+  "footer": {
+    "brandDescription": "Descargue videos de YouTube, audio MP3, reels de Instagram, publicaciones, historias e imágenes de perfil: de forma rápida, gratuita y privada.",
+    "tools": "Herramientas",
+    "youtubeGuides": "Guías de YouTube",
+    "instagramGuides": "Guías de Instagram",
+    "morePlatforms": "Más plataformas",
+    "legal": "Legal",
+    "support": "Apoyo",
+    "toolsList": {
+      "youtubeDownloader": "Descargador de YouTube",
+      "youtubeMp3": "YouTube a MP3",
+      "instagramDownloader": "Descargador de Instagram",
+      "instagramStory": "Historia de Instagram"
+    },
+    "youtubeGuidesList": {
+      "downloadVideos": "Descargar vídeos de YouTube",
+      "convertMp3": "Convertir YouTube a MP3",
+      "download4k": "Descargar vídeos 4K",
+      "shorts": "Descargador de cortos de YouTube"
+    },
+    "instagramGuidesList": {
+      "downloadPosts": "Descargar publicaciones y carretes",
+      "downloadStories": "Descargar Historias",
+      "profilePics": "Descargar fotos de perfil",
+      "igtv": "Descargar vídeos IGTV"
+    },
+    "morePlatformsList": {
+      "facebook": "Descargador de Facebook",
+      "tiktok": "Descargador de TikTok",
+      "pinterest": "Descargador de Pinterest"
+    },
+    "legalList": {
+      "privacy": "política de privacidad",
+      "terms": "Términos de servicio",
+      "dmca": "DMCA",
+      "contact": "Contáctenos"
+    },
+    "copyright": "Construido con yt-dlp. No afiliado a YouTube o Instagram."
+  },
+  "clear": "Claro",
+  "downloaderHeading": "Descargar",
+  "errorDefault": "algo salió mal"
+}

@@ -48,7 +48,7 @@ export default function Dmca() {
       <section className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed">
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Send Notices To</h2>
         <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-5 space-y-1">
-          <p><strong>Email:</strong> dmca@instadownload.app</p>
+          <p><strong>Email:</strong>mxr575@gmail.com</p>
           <p><strong>Response Time:</strong> We aim to respond within 48 hours.</p>
         </div>
 

@@ -1,0 +1,317 @@
+{
+  "lang": "English",
+  "brand": "InstaDownload",
+  "nav": {
+    "home": "بيت",
+    "youtube": "YouTube",
+    "instagram": "Instagram",
+    "facebook": "Facebook",
+    "tiktok": "TikTok",
+    "pinterest": "Pinterest",
+    "youtubeSub": {
+      "downloader": "YouTube Downloader",
+      "videoDownloader": "يوتيوب تنزيل الفيديو",
+      "shortsDownloader": "YouTube Shorts Downloader",
+      "mp3": "YouTube to MP3",
+      "audioDownloader": "يوتيوب تنزيل الصوت",
+      "songDownloader": "برنامج تحميل اغاني اليوتيوب",
+      "toMp4": "يوتيوب إلى MP4",
+      "musicDownloader": "يوتيوب تنزيل الموسيقى",
+      "moviesDownloader": "برنامج تحميل افلام يوتيوب"
+    },
+    "instagramSub": {
+      "downloader": "Instagram Downloader",
+      "videoDownloader": "تنزيل فيديو انستقرام",
+      "photoDownloader": "برنامج تحميل الصور من الانستقرام",
+      "reelsDownloader": "تحميل بكرات Instagram",
+      "story": "Instagram Story Downloader",
+      "carouselDownloader": "تحميل الانستقرام كاروسيل",
+      "profileDownloader": "تنزيل الملف الشخصي في Instagram"
+    }
+  },
+  "theme": {
+    "light": "التبديل إلى وضع الضوء",
+    "dark": "التبديل إلى الوضع المظلم"
+  },
+  "language": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español",
+    "hi": "हिन्दी",
+    "ar": "العربية",
+    "pt": "Português",
+    "fr": "Français",
+    "de": "Deutsch",
+    "id": "Indonesia",
+    "ja": "日本語",
+    "ko": "한국어",
+    "vi": "Tiếng Việt",
+    "it": "Italiano",
+    "tr": "Türkçe",
+    "bn": "বাংলা",
+    "ta": "தமிழ்",
+    "pa": "ਪੰਜਾਬੀ",
+    "ur": "اُردُو",
+    "te": "తెలుగు",
+    "ms": "Malaysia",
+    "th": "ภาษาไทย",
+    "ru": "Русский",
+    "nl": "Nederlands",
+    "zh": "中文"
+  },
+  "hero": {
+    "title": "الكل في واحد مجانا",
+    "titleHighlight": "تنزيل الفيديو",
+    "subtitle": "قم بتنزيل مقاطع الفيديو والبكرات والقصص والصوت من YouTube وInstagram وFacebook وTikTok والمزيد. سريع ومجاني وخاص. لا حاجة لحساب.",
+    "inputPlaceholder": "الصق عنوان URL على YouTube أو Instagram...",
+    "paste": "لصق",
+    "go": "يذهب"
+  },
+  "tools": {
+    "youtube": "YouTube",
+    "youtubeMp3": "يوتيوب MP3",
+    "instagram": "Instagram",
+    "instagramStory": "Instagram Story"
+  },
+  "steps": {
+    "heading": "كيفية التحميل؟",
+    "step1": {
+      "title": "انسخ عنوان URL",
+      "desc": "افتح YouTube أو Instagram، وابحث عن الفيديو أو المقطع المصور أو الصورة التي تريدها، وانسخ الرابط الخاص بها."
+    },
+    "step2": {
+      "title": "الصق الرابط",
+      "desc": "الصق عنوان URL في حقل الإدخال أعلاه. ستقوم أداتنا بالكشف التلقائي عن المصدر وإظهار المعاينة."
+    },
+    "step3": {
+      "title": "Download",
+      "desc": "اختر الجودة المفضلة لديك وانقر فوق الزر \"تنزيل\". يتم حفظ الملف مباشرة على جهازك."
+    }
+  },
+  "features": {
+    "quality": {
+      "title": "جودة عالية",
+      "desc": "تنزيل بدقة تصل إلى 4K. اختر التنسيق والجودة المفضلة لديك."
+    },
+    "audio": {
+      "title": "الصوت فقط",
+      "desc": "قم باستخراج صوت MP3 من أي فيديو على YouTube بجودة تصل إلى 320 كيلوبت في الثانية."
+    },
+    "fast": {
+      "title": "سريع ومجاني",
+      "desc": "مدعوم من yt-dlp. لا حدود، لا الاشتراكات، لا تتبع. مجاني تماما للاستخدام."
+    }
+  },
+  "platforms": {
+    "heading": "المنصات المدعومة",
+    "youtube": "يوتيوب",
+    "instagram": "انستغرام",
+    "facebook": "فيسبوك",
+    "tiktok": "تيك توك",
+    "pinterest": "بينتريست"
+  },
+  "faq": {
+    "heading": "الأسئلة المتداولة",
+    "q1": {
+      "q": "هل InstaDownload مجاني؟",
+      "a": "نعم، مجاني تماما. لا توجد اشتراكات، ولا تكاليف مخفية، ولا مستويات متميزة."
+    },
+    "q2": {
+      "q": "هل أحتاج إلى حساب؟",
+      "a": "لا يوجد حساب أو تسجيل الدخول المطلوبة. فقط قم بلصق الرابط وتنزيله."
+    },
+    "q3": {
+      "q": "ما هي خيارات الجودة المتاحة؟",
+      "a": "يوتيوب: ما يصل إلى 1080 بكسل (و 4K إذا كان متاحًا). اختر من بين 360p أو 480p أو 720p أو 1080p أو الأعلى. إنستغرام: أفضل جودة متاحة."
+    },
+    "q4": {
+      "q": "هل أستطيع تحميل الصوت فقط؟",
+      "a": "نعم! استخدم خيار YouTube MP3 لاستخراج الصوت بسرعة 128-320 كيلوبت في الثانية."
+    },
+    "q5": {
+      "q": "ما هي مدة تخزين الملفات؟",
+      "a": "يتم حذف الملفات التي تم تنزيلها تلقائيًا من خوادمنا خلال 30 دقيقة حفاظًا على خصوصيتك."
+    },
+    "q6": {
+      "q": "هل هي آمنة؟",
+      "a": "يتم تشفير جميع الاتصالات عبر HTTPS. نحن لا نتتبع أو نخزن أو نشارك تنزيلاتك."
+    },
+    "q7": {
+      "q": "ما هي المنصات التي تدعمونها؟",
+      "a": "نحن ندعم حاليًا YouTube وInstagram وFacebook وTikTok وPinterest. المزيد من المنصات قريبا!"
+    },
+    "q8": {
+      "q": "هل يدعم Instagram القصص؟",
+      "a": "نعم، يمكنك تنزيل قصص Instagram عن طريق إدخال اسم المستخدم. ملحوظة: القصص تتطلب ألا يكون الحساب خاصًا."
+    },
+    "q9": {
+      "q": "هل يمكنني تنزيل الصور الشخصية على Instagram؟",
+      "a": "نعم! أدخل اسم مستخدم Instagram وسنقوم بإحضار صورة ملفه الشخصي الحالية بدقة عالية."
+    },
+    "q10": {
+      "q": "هل يمكنني تنزيل فيديوهات الفيسبوك؟",
+      "a": "سيتم تنزيل فيديو الفيسبوك قريبًا. في هذه الأثناء، جرّب أدوات التنزيل على YouTube أو Instagram."
+    },
+    "q11": {
+      "q": "هل يمكنني تنزيل مقاطع فيديو TikTok؟",
+      "a": "سيتم تنزيل فيديو TikTok قريبًا. ستدعم منصتنا تنزيل مقاطع فيديو TikTok بدون علامات مائية."
+    }
+  },
+  "youtubeDownloader": {
+    "urlLabel": "عنوان URL للفيديو",
+    "urlPlaceholder": "https://youtube.com/watch?v=... أو https://youtu.be/...",
+    "fetching": "جارٍ جلب معلومات الفيديو...",
+    "chooseQuality": "اختر الجودة:",
+    "bestQuality": "أفضل جودة",
+    "bestQualityDesc": "دعونا نختار أفضل ما هو متاح",
+    "recommended": "مُستَحسَن",
+    "fast": "سريع",
+    "download": "Download",
+    "downloading": "جارٍ التنزيل...",
+    "cancel": "إلغاء التنزيل",
+    "downloadFile": "Download File",
+    "pleaseEnterUrl": "Please enter a URL"
+  },
+  "igDownloader": {
+    "urlLabel": "عنوان URL للنشر/البكرة",
+    "urlPlaceholder": "https://instagram.com/p/... أو /reel/...",
+    "download": "Download",
+    "starting": "جارٍ البدء...",
+    "cancel": "يلغي",
+    "downloadFile": "تنزيل الملف",
+    "pleaseEnterUrl": "الرجاء إدخال عنوان URL"
+  },
+  "youtubeMp3": {
+    "title": "YouTube to MP3 Converter",
+    "subtitle": "Extract high-quality audio from any YouTube video",
+    "urlLabel": "عنوان URL لفيديو YouTube",
+    "urlPlaceholder": "https://www.youtube.com/watch?v=...",
+    "qualityLabel": "جودة الصوت",
+    "qualityStandard": "128 كيلوبت في الثانية (قياسي)",
+    "qualityHigh": "192 كيلوبت في الثانية (عالية)",
+    "qualityUltra": "320 كيلوبت في الثانية (فائقة)",
+    "convert": "تحويل إلى MP3",
+    "processing": "يعالج...",
+    "downloadMp3": "تحميل MP3",
+    "convertAnother": "تحويل فيديو آخر",
+    "cancel": "إلغاء التحويل",
+    "pleaseEnterUrl": "الرجاء إدخال عنوان URL لموقع YouTube"
+  },
+  "instagram": {
+    "title": "Instagram Downloader",
+    "subtitle": "Download posts, reels, stories & profile pictures",
+    "tabPost": "بوست / بكرة",
+    "tabStories": "قصص",
+    "tabProfile": "حساب تعريفي",
+    "stories": {
+      "usernameLabel": "Username",
+      "usernamePlaceholder": "e.g. natgeo",
+      "fetch": "Fetch Stories",
+      "fetching": "Fetching...",
+      "downloadFile": "تحميل ملف القصص",
+      "enterUsername": "Enter a username"
+    },
+    "profile": {
+      "usernameLabel": "اسم المستخدم",
+      "usernamePlaceholder": "على سبيل المثال سباحة",
+      "getProfilePic": "الحصول على صورة الملف الشخصي",
+      "fetching": "جارٍ الجلب...",
+      "enterUsername": "أدخل اسم المستخدم",
+      "openFullSize": "فتح الحجم الكامل"
+    }
+  },
+  "instagramStory": {
+    "title": "Instagram Story Downloader",
+    "subtitle": "Download active stories from any public Instagram account",
+    "usernameLabel": "اسم مستخدم انستقرام",
+    "usernamePlaceholder": "اسم المستخدم",
+    "fetch": "جلب القصص",
+    "fetching": "جارٍ جلب القصص...",
+    "downloadArchive": "تحميل ارشيف القصص",
+    "downloadDesc": "تم تجميع جميع القصص النشطة في ملف مضغوط واحد لراحتك.",
+    "pleaseEnterUsername": "الرجاء إدخال اسم مستخدم Instagram"
+  },
+  "contact": {
+    "title": "Contact Us",
+    "description": "هل لديك سؤال، اقتراح، أو العثور على خطأ؟ املأ النموذج أدناه وسنقوم بالرد عليك خلال 24 ساعة.",
+    "nameLabel": "اسم",
+    "namePlaceholder": "اسمك",
+    "emailLabel": "بريد إلكتروني",
+    "emailPlaceholder": "you@example.com",
+    "messageLabel": "رسالة",
+    "messagePlaceholder": "كيف يمكننا مساعدتك؟",
+    "sendMessage": "أرسل رسالة"
+  },
+  "pages": {
+    "youtube": {
+      "title": "YouTube Downloader",
+      "subtitle": "قم بتنزيل مقاطع الفيديو أو استخراج الصوت"
+    },
+    "youtubeMp3": {
+      "title": "يوتيوب لتحويل MP3",
+      "subtitle": "استخراج صوت عالي الجودة من أي فيديو على اليوتيوب"
+    },
+    "instagram": {
+      "title": "Instagram Downloader",
+      "subtitle": "قم بتنزيل المنشورات والبكرات والقصص وصور الملف الشخصي"
+    },
+    "instagramStory": {
+      "title": "تنزيل قصة الانستقرام",
+      "subtitle": "قم بتنزيل القصص النشطة من أي حساب Instagram عام"
+    },
+    "contact": {
+      "title": "Contact Us"
+    },
+    "privacy": {
+      "title": "Privacy Policy"
+    },
+    "terms": {
+      "title": "Terms of Service"
+    },
+    "dmca": {
+      "title": "إشعار قانون الألفية الجديدة لحقوق طبع ونشر المواد الرقمية والإزالة"
+    }
+  },
+  "footer": {
+    "brandDescription": "قم بتنزيل مقاطع فيديو YouTube، وملفات صوتية بتنسيق MP3، وبكرات Instagram، ومنشورات، وقصص، وصور الملف الشخصي - بسرعة، ومجانية، وخاصة.",
+    "tools": "أدوات",
+    "youtubeGuides": "أدلة يوتيوب",
+    "instagramGuides": "أدلة إنستغرام",
+    "morePlatforms": "المزيد من المنصات",
+    "legal": "قانوني",
+    "support": "يدعم",
+    "toolsList": {
+      "youtubeDownloader": "يوتيوب داونلودر",
+      "youtubeMp3": "يوتيوب إلى MP3",
+      "instagramDownloader": "تنزيل الانستقرام",
+      "instagramStory": "قصة انستغرام"
+    },
+    "youtubeGuidesList": {
+      "downloadVideos": "تحميل فيديوهات يوتيوب",
+      "convertMp3": "تحويل يوتيوب إلى MP3",
+      "download4k": "تحميل فيديوهات 4K",
+      "shorts": "برنامج تحميل شورتات اليوتيوب"
+    },
+    "instagramGuidesList": {
+      "downloadPosts": "تنزيل المشاركات والبكرات",
+      "downloadStories": "تحميل قصص",
+      "profilePics": "تحميل الصور الشخصية",
+      "igtv": "تحميل فيديوهات IGTV"
+    },
+    "morePlatformsList": {
+      "facebook": "Facebook Downloader",
+      "tiktok": "تنزيل تيك توك",
+      "pinterest": "تحميل بينتريست"
+    },
+    "legalList": {
+      "privacy": "سياسة الخصوصية",
+      "terms": "شروط الخدمة",
+      "dmca": "قانون الألفية الجديدة لحقوق طبع ونشر المواد الرقمية",
+      "contact": "اتصل بنا"
+    },
+    "copyright": "Built with yt-dlp. Not affiliated with YouTube or Instagram."
+  },
+  "clear": "واضح",
+  "downloaderHeading": "تحميل",
+  "errorDefault": "حدث خطأ ما"
+}
