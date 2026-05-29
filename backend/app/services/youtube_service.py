@@ -1,15 +1,21 @@
 """YouTube download service using yt-dlp."""
 
 import os
+import asyncio
 import threading
 from pathlib import Path
 from typing import Optional
 
 import yt_dlp
 
-from app.utils.helpers import find_ffmpeg, generate_task_id, snapshot_directory, find_new_output, save_task_state
+from app.utils.helpers import find_ffmpeg, generate_task_id, save_task_state, apply_cookies
+from app.redis_cache import get_cached_preview, set_cached_preview
+from app.config import get_settings
 
 _FFMPEG_PATH = find_ffmpeg()
+
+
+# Cookie handling moved to app.utils.helpers.apply_cookies()
 
 # ── In-memory progress tracking ──────────────────────────────
 
@@ -59,6 +65,11 @@ class YouTubeService:
     """Handles YouTube video/audio downloads and info extraction."""
 
     @staticmethod
+    def active_count() -> int:
+        with _tasks_lock:
+            return len(_tasks)
+
+    @staticmethod
     def get_progress(task_id: str) -> dict | None:
         with _tasks_lock:
             return _tasks.get(task_id)
@@ -76,11 +87,20 @@ class YouTubeService:
 
     @staticmethod
     def extract_info(url: str) -> dict | None:
-        """Get video metadata without downloading."""
+        """Get video metadata without downloading (with Redis caching)."""
+        # Check cache
+        try:
+            cached = asyncio.run(get_cached_preview(url))
+            if cached:
+                return cached
+        except Exception:
+            pass
+
         try:
             opts = {"quiet": True, "no_warnings": True, "extract_flat": False}
             if _FFMPEG_PATH:
                 opts["ffmpeg_location"] = _FFMPEG_PATH
+            apply_cookies(opts, download=False)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(url, download=False)
                 if info:
@@ -95,7 +115,7 @@ class YouTubeService:
                             "acodec": f.get("acodec"),
                             "tbr": f.get("tbr"),
                         })
-                    return {
+                    result = {
                         "title": info.get("title", "Unknown"),
                         "duration": info.get("duration", 0),
                         "uploader": info.get("uploader", info.get("channel", "Unknown")),
@@ -103,6 +123,12 @@ class YouTubeService:
                         "webpage_url": info.get("webpage_url", url),
                         "formats": formats[:20],  # limit to first 20
                     }
+                    # Cache result
+                    try:
+                        asyncio.run(set_cached_preview(url, result))
+                    except Exception:
+                        pass
+                    return result
         except Exception:
             return None
         return None
@@ -127,13 +153,37 @@ class YouTubeService:
     @staticmethod
     def _resolve_format(quality: str) -> str:
         mapping = {
-            "highest": "bv*+ba/b",
-            "1080p": "bv*[height<=1080]+ba/b[height<=1080]/b",
-            "720p": "bv*[height<=720]+ba/b[height<=720]/b",
-            "480p": "bv*[height<=480]+ba/b[height<=480]/b",
-            "360p": "bv*[height<=360]+ba/b[height<=360]/b",
+            "highest": "bestvideo+bestaudio/best",
+            "1080p": "bestvideo[height<=1080]+bestaudio/best[height<=1080]",
+            "720p": "bestvideo[height<=720]+bestaudio/best[height<=720]",
+            "480p": "bestvideo[height<=480]+bestaudio/best[height<=480]",
+            "360p": "bestvideo[height<=360]+bestaudio/best[height<=360]",
         }
-        return mapping.get(quality.lower(), "bv*+ba/b")
+        return mapping.get(quality.lower(), "bestvideo+bestaudio/best")
+
+    @staticmethod
+    def _find_output_file(download_dir: str, prefix: str) -> str:
+        """Find the newest completed file in download_dir starting with `prefix`.
+        
+        Skips .part / .fragment / .ytdl temp files and .task_*.json state files.
+        Returns absolute path string, or '' if nothing found.
+        """
+        try:
+            candidates = []
+            for p in Path(download_dir).iterdir():
+                name = p.name
+                if not name.startswith(prefix):
+                    continue
+                if any(name.endswith(ext) for ext in (".part", ".fragment", ".ytdl")):
+                    continue
+                if p.is_file():
+                    candidates.append(p)
+            if not candidates:
+                return ""
+            candidates.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+            return str(candidates[0].resolve())
+        except Exception:
+            return ""
 
     @staticmethod
     def _download_thread(
@@ -145,7 +195,8 @@ class YouTubeService:
         download_dir: str,
     ):
         try:
-            outtmpl = os.path.join(download_dir, "%(title)s.%(ext)s")
+            prefix = f"yt_{task_id}_"
+            outtmpl = os.path.join(download_dir, f"{prefix}%(title)s.%(ext)s")
             opts = {
                 "outtmpl": outtmpl,
                 "progress_hooks": [_progress_hook(state)],
@@ -155,6 +206,7 @@ class YouTubeService:
             }
             if _FFMPEG_PATH:
                 opts["ffmpeg_location"] = _FFMPEG_PATH
+            apply_cookies(opts, download=True)
 
             if audio_only:
                 opts["format"] = "bestaudio/best"
@@ -166,30 +218,34 @@ class YouTubeService:
             else:
                 opts["format"] = YouTubeService._resolve_format(quality)
 
-            # Snapshot before so we can detect the new output file
-            before = snapshot_directory(download_dir)
+            os.makedirs(download_dir, exist_ok=True)
 
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([url.strip()])
 
-            output_suffix = ".mp3" if audio_only else ".mp4"
-            output_path = find_new_output(before, download_dir, suffix=output_suffix)
+            output_path = YouTubeService._find_output_file(download_dir, prefix)
             state["output_path"] = output_path
             state["status"] = "done" if output_path else "error"
             state["percent"] = 100.0
-            state["before_snapshot"] = list(before)
             state["new_files"] = [output_path] if output_path else []
             if not output_path:
                 state["error_msg"] = "Output file not found after download"
 
-            # Persist to disk so state survives container restarts
             save_task_state(task_id, state, download_dir)
 
         except Exception as e:
             state["status"] = "error"
             state["error_msg"] = str(e)
-            state["before_snapshot"] = list(before)
             state["new_files"] = []
             save_task_state(task_id, state, download_dir)
 
+        except Exception as e:
+            state["status"] = "error"
+            state["error_msg"] = str(e)
+            try:
+                state["before_snapshot"] = list(before)
+            except NameError:
+                state["before_snapshot"] = []
+            state["new_files"] = []
+            save_task_state(task_id, state, download_dir)
 

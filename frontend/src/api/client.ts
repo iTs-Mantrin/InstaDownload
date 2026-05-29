@@ -11,6 +11,7 @@ export interface ProgressState {
   filename: string
   status: string
   error_msg: string
+  download_url?: string | null
 }
 
 export interface DownloadResponse {
@@ -26,16 +27,22 @@ export interface PreviewInfo {
   thumbnail: string
 }
 
+// ── Route helper ──────────────────────────────────────────────
+// Backend routes are per-source: /api/youtube/download, /api/instagram/preview, etc.
+function apiFor(source: string, endpoint: string): string {
+  return `${API_BASE}/${source}/${endpoint}`
+}
+
 export async function startDownload(params: {
   url: string
   source: string
   quality?: string
   audio_only?: boolean
 }): Promise<DownloadResponse> {
-  const res = await fetch(`${API_BASE}/download`, {
+  const res = await fetch(apiFor(params.source, 'download'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(params),
+    body: JSON.stringify({ url: params.url, quality: params.quality, audio_only: params.audio_only }),
   })
   if (!res.ok) {
     const err = await res.json().catch(() => ({ detail: res.statusText }))
@@ -44,35 +51,52 @@ export async function startDownload(params: {
   return res.json()
 }
 
-export async function getProgress(taskId: string): Promise<ProgressState> {
-  const res = await fetch(`${API_BASE}/progress/${taskId}`)
-  if (!res.ok) throw new Error('Progress fetch failed')
+export async function getProgress(taskId: string, source: string): Promise<ProgressState> {
+  const res = await fetch(apiFor(source, `progress/${taskId}`))
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }))
+    throw new Error(err.detail || 'Progress fetch failed')
+  }
   return res.json()
 }
 
-export function getDownloadUrl(taskId: string): string {
-  return `${API_BASE}/file/${taskId}`
+export function getDownloadUrl(taskId: string, source: string): string {
+  return apiFor(source, `file/${taskId}`)
 }
 
-export async function cancelTask(taskId: string): Promise<void> {
-  await fetch(`${API_BASE}/cancel/${taskId}`, { method: 'DELETE' })
+export function resolveApiUrl(path: string): string {
+  if (/^https?:\/\//i.test(path)) return path
+  if (BACKEND_URL) {
+    return `${BACKEND_URL}${path.startsWith('/') ? path : `/${path}`}`
+  }
+  return path
+}
+
+export async function cancelTask(taskId: string, source: string): Promise<void> {
+  await fetch(apiFor(source, taskId), { method: 'DELETE' })
 }
 
 export async function previewUrl(url: string, source: string): Promise<PreviewInfo> {
-  const res = await fetch(`${API_BASE}/preview`, {
+  const res = await fetch(apiFor(source, 'preview'), {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ url, source }),
+    body: JSON.stringify({ url }),
   })
-  if (!res.ok) throw new Error('Preview fetch failed')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }))
+    throw new Error(err.detail || 'Preview fetch failed')
+  }
   return res.json()
 }
 
-export async function fetchInstagramStories(username: string): Promise<string[]> {
+export async function fetchInstagramStories(username: string): Promise<DownloadResponse> {
   const res = await fetch(`${API_BASE}/instagram/stories?username=${encodeURIComponent(username)}`, {
     method: 'POST',
   })
-  if (!res.ok) throw new Error('Stories fetch failed')
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }))
+    throw new Error(err.detail || 'Stories fetch failed')
+  }
   return res.json()
 }
 

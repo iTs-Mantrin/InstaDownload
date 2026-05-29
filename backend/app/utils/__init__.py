@@ -7,6 +7,7 @@ from .helpers import (
     is_valid_url,
     generate_task_id,
     clean_old_files,
+    apply_cookies,
 )
 
 __all__ = [
@@ -18,4 +19,5 @@ __all__ = [
     "is_valid_url",
     "generate_task_id",
     "clean_old_files",
+    "apply_cookies",
 ]

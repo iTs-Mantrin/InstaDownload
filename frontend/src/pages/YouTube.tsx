@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl } from '../api/client.ts'
+import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl, resolveApiUrl } from '../api/client.ts'
 import type { ProgressState, PreviewInfo } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
@@ -52,12 +52,16 @@ export default function YouTubePage() {
       // Start polling
       pollingRef.current = setInterval(async () => {
         try {
-          const p = await getProgress(task_id)
+          const p = await getProgress(task_id, 'youtube')
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
+            if (p.status === 'error' || p.status === 'cancelled') {
+              setError(p.error_msg || `Download ${p.status}`)
+            }
             stopPolling()
           }
-        } catch {
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Progress fetch failed')
           stopPolling()
         }
       }, 500)
@@ -69,7 +73,7 @@ export default function YouTubePage() {
 
   const handleCancel = async () => {
     if (taskId) {
-      await cancelTask(taskId)
+      await cancelTask(taskId, 'youtube')
       stopPolling()
     }
   }
@@ -175,7 +179,7 @@ export default function YouTubePage() {
         {/* Download link */}
         {progress?.status === 'done' && taskId && (
           <a
-            href={getDownloadUrl(taskId)}
+            href={progress.download_url ? resolveApiUrl(progress.download_url) : getDownloadUrl(taskId, 'youtube')}
             className="block text-center px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-semibold transition-colors"
           >
             Download File

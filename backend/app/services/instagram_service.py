@@ -1,6 +1,7 @@
 """Instagram download service using yt-dlp."""
 
 import os
+import asyncio
 import threading
 import re
 from pathlib import Path
@@ -8,7 +9,9 @@ from typing import Optional
 
 import yt_dlp
 
-from app.utils.helpers import find_ffmpeg, snapshot_directory, find_new_output, save_task_state
+from app.utils.helpers import find_ffmpeg, save_task_state, apply_cookies
+from app.redis_cache import get_cached_preview, set_cached_preview
+from app.config import get_settings
 
 _FFMPEG_PATH = find_ffmpeg()
 
@@ -55,6 +58,11 @@ class InstagramService:
     """Handles Instagram post/reel/story/profile downloads."""
 
     @staticmethod
+    def active_count() -> int:
+        with _tasks_lock:
+            return len(_tasks)
+
+    @staticmethod
     def get_progress(task_id: str) -> dict | None:
         with _tasks_lock:
             return _tasks.get(task_id)
@@ -72,8 +80,17 @@ class InstagramService:
 
     @staticmethod
     def extract_info(url: str) -> dict | None:
-        """Preview Instagram media metadata."""
+        """Preview Instagram media metadata (with Redis caching)."""
+        # Check cache
         try:
+            cached = asyncio.run(get_cached_preview(url))
+            if cached:
+                return cached
+        except Exception:
+            pass
+
+        try:
+            settings = get_settings()
             opts = {
                 "quiet": True,
                 "no_warnings": True,
@@ -81,6 +98,7 @@ class InstagramService:
             }
             if _FFMPEG_PATH:
                 opts["ffmpeg_location"] = _FFMPEG_PATH
+            apply_cookies(opts)
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(url, download=False)
                 if info:
@@ -89,13 +107,19 @@ class InstagramService:
                         media_type = "reel"
                     elif info.get("entries") and len(info["entries"]) > 1:
                         media_type = "carousel"
-                    return {
+                    result = {
                         "title": info.get("title", "Instagram media"),
                         "type": media_type,
                         "thumbnail": info.get("thumbnail", ""),
                         "username": info.get("uploader", ""),
                         "description": (info.get("description") or "")[:200],
                     }
+                    # Cache result
+                    try:
+                        asyncio.run(set_cached_preview(url, result))
+                    except Exception:
+                        pass
+                    return result
         except Exception:
             return None
         return None
@@ -172,6 +196,30 @@ class InstagramService:
         return None
 
     @staticmethod
+    def _find_output_file(download_dir: str, prefix: str) -> str:
+        """Find the newest completed file in download_dir starting with `prefix`.
+        
+        Skips .part / .fragment / .ytdl temp files and .task_*.json state files.
+        Returns absolute path string, or '' if nothing found.
+        """
+        try:
+            candidates = []
+            for p in Path(download_dir).iterdir():
+                name = p.name
+                if not name.startswith(prefix):
+                    continue
+                if any(name.endswith(ext) for ext in (".part", ".fragment", ".ytdl")):
+                    continue
+                if p.is_file():
+                    candidates.append(p)
+            if not candidates:
+                return ""
+            candidates.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+            return str(candidates[0].resolve())
+        except Exception:
+            return ""
+
+    @staticmethod
     def _download_thread(
         state: dict,
         task_id: str,
@@ -179,7 +227,9 @@ class InstagramService:
         download_dir: str,
     ):
         try:
-            outtmpl = os.path.join(download_dir, "ig_%(id)s_%(title)s.%(ext)s")
+            settings = get_settings()
+            prefix = f"ig_{task_id}_"
+            outtmpl = os.path.join(download_dir, f"{prefix}%(id)s_%(title)s.%(ext)s")
             opts = {
                 "format": "best",
                 "outtmpl": outtmpl,
@@ -189,29 +239,25 @@ class InstagramService:
             }
             if _FFMPEG_PATH:
                 opts["ffmpeg_location"] = _FFMPEG_PATH
-
-            # Snapshot before so we can detect the new output file
-            before = snapshot_directory(download_dir)
+            apply_cookies(opts)
+            os.makedirs(download_dir, exist_ok=True)
 
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([url.strip()])
 
-            output_path = find_new_output(before, download_dir)
+            output_path = InstagramService._find_output_file(download_dir, prefix)
             state["output_path"] = output_path
             state["status"] = "done" if output_path else "error"
             state["percent"] = 100.0
-            state["before_snapshot"] = list(before)
             state["new_files"] = [output_path] if output_path else []
             if not output_path:
                 state["error_msg"] = "Output file not found after download"
 
-            # Persist to disk so state survives container restarts
             save_task_state(task_id, state, download_dir)
 
         except Exception as e:
             state["status"] = "error"
             state["error_msg"] = str(e)
-            state["before_snapshot"] = list(before)
             state["new_files"] = []
             save_task_state(task_id, state, download_dir)
 
@@ -224,31 +270,32 @@ class InstagramService:
     ):
         """Attempt story download (requires cookies in production)."""
         try:
+            settings = get_settings()
             story_url = f"https://www.instagram.com/stories/{username}/"
-            outtmpl = os.path.join(download_dir, "story_%(id)s_%(title)s.%(ext)s")
+            prefix = f"story_{task_id}_"
+            outtmpl = os.path.join(download_dir, f"{prefix}%(id)s_%(title)s.%(ext)s")
             opts = {
                 "format": "best",
                 "outtmpl": outtmpl,
                 "progress_hooks": [_progress_hook(state)],
                 "quiet": True,
                 "no_warnings": True,
-                "cookiefrombrowser": ("chrome", "edge"),
                 "ignoreerrors": True,
             }
             if _FFMPEG_PATH:
                 opts["ffmpeg_location"] = _FFMPEG_PATH
 
-            before = snapshot_directory(download_dir)
+            apply_cookies(opts)
+            os.makedirs(download_dir, exist_ok=True)
 
             with yt_dlp.YoutubeDL(opts) as ydl:
                 info = ydl.extract_info(story_url, download=True)
 
             if info and info.get("entries"):
-                output_path = find_new_output(before, download_dir)
+                output_path = InstagramService._find_output_file(download_dir, prefix)
                 state["output_path"] = output_path
                 state["status"] = "done" if output_path else "error"
                 state["percent"] = 100.0
-                state["before_snapshot"] = list(before)
                 state["new_files"] = [output_path] if output_path else []
                 if not output_path:
                     state["error_msg"] = "Stories output file not found"
@@ -256,17 +303,16 @@ class InstagramService:
                 state["status"] = "error"
                 state["error_msg"] = (
                     "No stories found or requires login. "
-                    "Try adding cookies via YT_DLP_COOKIES_FILE env var."
+                    "Run the cookie export script:\n"
+                    "  python scripts/export_cookies.py --force\n"
+                    "Then restart the backend."
                 )
-            state["before_snapshot"] = list(before)
             state["new_files"] = []
             save_task_state(task_id, state, download_dir)
 
         except Exception as e:
             state["status"] = "error"
             state["error_msg"] = str(e)
-            state["before_snapshot"] = list(before)
             state["new_files"] = []
             save_task_state(task_id, state, download_dir)
-
 

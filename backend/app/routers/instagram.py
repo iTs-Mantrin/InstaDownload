@@ -1,7 +1,7 @@
 """Instagram API routes."""
 
 import os
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException, Query, Body
 from fastapi.responses import FileResponse
 
 from app.schemas import (
@@ -24,7 +24,7 @@ settings = get_settings()
 
 
 @router.post("/preview", response_model=InstagramPreview)
-def preview_instagram(url: str):
+def preview_instagram(url: str = Body(..., embed=True)):
     """Preview Instagram media metadata."""
     if not is_valid_url(url) or not is_instagram_url(url):
         raise HTTPException(400, "Invalid Instagram URL")

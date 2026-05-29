@@ -125,8 +125,18 @@ export default function Layout({ children }: { children: ReactNode }) {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-slate-200 dark:border-slate-800 py-6 text-center text-sm text-slate-500 dark:text-slate-500 transition-colors">
-        <p>&copy; {new Date().getFullYear()} InstaDownload. Built with yt-dlp.</p>
+      <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-sm text-slate-500 dark:text-slate-500 transition-colors">
+        <div className="max-w-6xl mx-auto px-4">
+          <div className="flex flex-wrap justify-center gap-x-6 gap-y-2 mb-4">
+            <Link to="/youtube-mp3" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">YouTube MP3</Link>
+            <Link to="/instagram-story" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Instagram Story</Link>
+            <Link to="/contact" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Contact</Link>
+            <Link to="/privacy" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Privacy Policy</Link>
+            <Link to="/terms" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Terms of Service</Link>
+            <Link to="/dmca" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">DMCA</Link>
+          </div>
+          <p className="text-center">&copy; {new Date().getFullYear()} InstaDownload. Built with yt-dlp. Not affiliated with YouTube or Instagram.</p>
+        </div>
       </footer>
     </div>
   )

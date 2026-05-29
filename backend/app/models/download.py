@@ -1,30 +1,37 @@
-"""SQLAlchemy models for InstaDownload."""
+"""SQLAlchemy ORM model for download tracking."""
 
-import uuid
-from datetime import datetime
+from datetime import datetime, timezone
 
-from sqlalchemy import Column, String, DateTime, Integer, Float, Text, Boolean
-from sqlalchemy.dialects.postgresql import UUID
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy import BigInteger, Boolean, DateTime, Integer, String, Text
+from sqlalchemy.orm import Mapped, mapped_column
 
-
-class Base(DeclarativeBase):
-    pass
+from app.database import Base
 
 
 class DownloadRecord(Base):
     __tablename__ = "downloads"
 
-    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
-    task_id = Column(String(24), unique=True, nullable=False, index=True)
-    source = Column(String(20), nullable=False)  # youtube / instagram
-    url = Column(Text, nullable=False)
-    status = Column(String(20), default="queued")  # queued/downloading/done/error
-    file_path = Column(Text, nullable=True)
-    file_size = Column(Integer, nullable=True)
-    title = Column(String(500), nullable=True)
-    ip_address = Column(String(45), nullable=True)
-    error_msg = Column(Text, nullable=True)
-    created_at = Column(DateTime, default=datetime.utcnow)
-    completed_at = Column(DateTime, nullable=True)
-    deleted_at = Column(DateTime, nullable=True)
+    id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
+    task_id: Mapped[str] = mapped_column(String(32), nullable=False, index=True)
+    source: Mapped[str] = mapped_column(String(16), nullable=False)  # youtube / instagram
+    url: Mapped[str] = mapped_column(Text, nullable=False)
+    media_type: Mapped[str] = mapped_column(
+        String(32), nullable=False, default=""
+    )  # video / audio / story / profile_pic
+    quality: Mapped[str] = mapped_column(String(16), nullable=False, default="highest")
+    audio_only: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    status: Mapped[str] = mapped_column(
+        String(16), nullable=False, default="queued"
+    )  # queued / downloading / done / error
+    file_size: Mapped[int] = mapped_column(BigInteger, nullable=True, default=0)
+    error_msg: Mapped[str] = mapped_column(Text, nullable=True, default="")
+    ip_address: Mapped[str] = mapped_column(String(45), nullable=True, default="")
+    user_agent: Mapped[str] = mapped_column(String(256), nullable=True, default="")
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
+    completed_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )

@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import AdUnit from '../components/AdUnit.tsx'
+import Seo from '../components/Seo.tsx'
 
 function detectSource(url: string): string | null {
   const u = url.toLowerCase().trim()
@@ -33,6 +34,21 @@ export default function Home() {
 
   return (
     <div className="space-y-12">
+      <Seo
+        title="InstaDownload - YouTube & Instagram Downloader"
+        description="Download YouTube videos, MP3 audio, Instagram reels, posts, stories, and profile pictures with a fast mobile-first UI."
+        path="/"
+        keywords={['youtube downloader', 'instagram downloader', 'youtube to mp3', 'instagram reels downloader']}
+        schema={{
+          '@context': 'https://schema.org',
+          '@type': 'WebApplication',
+          name: 'InstaDownload',
+          applicationCategory: 'MultimediaApplication',
+          operatingSystem: 'Web',
+          description: 'Download YouTube and Instagram media with previews, progress tracking, and mobile-first UX.',
+        }}
+      />
+
       {/* Hero */}
       <section className="text-center py-16 space-y-6">
         <h1 className="text-5xl md:text-6xl font-bold tracking-tight">
@@ -78,6 +94,8 @@ export default function Home() {
             Instagram Downloader
           </Link>
         </div>
+
+
       </section>
 
       {/* Ad banner */}
@@ -99,6 +117,33 @@ export default function Home() {
 
       {/* Bottom ad */}
       <AdUnit className="max-w-3xl mx-auto" />
+
+      {/* FAQ */}
+      <section className="max-w-3xl mx-auto space-y-6">
+        <h2 className="text-2xl font-bold text-center">Frequently Asked Questions</h2>
+        <div className="space-y-3">
+          {[
+            { q: 'Is InstaDownload free?', a: 'Yes, completely free. No sign-ups, no hidden costs, no premium tiers.' },
+            { q: 'Do I need an account?', a: 'No account or login required. Just paste a link and download.' },
+            { q: 'What quality options are available?', a: 'YouTube: up to 1080p (and 4K if available). Choose from 360p, 480p, 720p, 1080p, or Highest. Instagram: best available quality.' },
+            { q: 'Can I download just the audio?', a: 'Yes! Use the YouTube MP3 option to extract audio at 128-320kbps.' },
+            { q: 'How long are files stored?', a: 'Downloaded files are automatically deleted from our servers within 30 minutes for your privacy.' },
+            { q: 'Is it safe?', a: 'All connections are encrypted via HTTPS. We don\'t track, store, or share your downloads.' },
+            { q: 'Does Instagram support stories?', a: 'Yes, you can download Instagram stories by entering a username. Note: stories require the account to not be private.' },
+            { q: 'Can I download Instagram profile pictures?', a: 'Yes! Enter any Instagram username and we\'ll fetch their current profile picture in HD.' },
+          ].map((faq) => (
+            <details key={faq.q} className="group rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800/50 transition-colors">
+              <summary className="px-5 py-4 font-medium text-slate-900 dark:text-white cursor-pointer list-none flex items-center justify-between">
+                {faq.q}
+                <svg className="w-5 h-5 text-slate-400 group-open:rotate-180 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </summary>
+              <p className="px-5 pb-4 text-sm text-slate-600 dark:text-slate-400">{faq.a}</p>
+            </details>
+          ))}
+        </div>
+      </section>
     </div>
   )
 }

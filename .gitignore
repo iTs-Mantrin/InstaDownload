@@ -1,0 +1,48 @@
+# ── Secrets ──
+backend/cookies.txt
+backend/.env
+frontend/.env
+
+# ── Python ──
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+*.egg
+dist/
+build/
+.venv/
+venv/
+
+# ── Node ──
+node_modules/
+frontend/dist/
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# ── OS ──
+Thumbs.db
+.DS_Store
+
+# ── Temp downloads ──
+downloads/
+
+# ── Railway / Deployment ──
+railway.json
+Procfile
+
+# ── Playwright / Debug logs ──
+.playwright-mcp/
+*.log
+*.txt
+backend/backend_err.txt
+backend/backend_out.txt
+backend/server_err.txt
+backend/server_out.txt
+frontend/frontend_err.txt
+frontend/frontend_out.txt

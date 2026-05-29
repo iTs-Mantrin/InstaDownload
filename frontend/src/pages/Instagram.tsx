@@ -1,5 +1,5 @@
 import { useState, useRef, useCallback } from 'react'
-import { startDownload, getProgress, getDownloadUrl, cancelTask, fetchInstagramStories, getProfilePicUrl } from '../api/client.ts'
+import { startDownload, getProgress, getDownloadUrl, cancelTask, fetchInstagramStories, getProfilePicUrl, resolveApiUrl } from '../api/client.ts'
 import type { ProgressState } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
@@ -77,12 +77,16 @@ function PostReelDownload() {
 
       pollingRef.current = setInterval(async () => {
         try {
-          const p = await getProgress(task_id)
+          const p = await getProgress(task_id, 'instagram')
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
+            if (p.status === 'error' || p.status === 'cancelled') {
+              setError(p.error_msg || `Download ${p.status}`)
+            }
             stopPolling()
           }
-        } catch {
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Progress fetch failed')
           stopPolling()
         }
       }, 500)
@@ -94,7 +98,7 @@ function PostReelDownload() {
 
   const handleCancel = async () => {
     if (taskId) {
-      await cancelTask(taskId)
+      await cancelTask(taskId, 'instagram')
       stopPolling()
     }
   }
@@ -138,7 +142,7 @@ function PostReelDownload() {
 
       {progress?.status === 'done' && taskId && (
         <a
-          href={getDownloadUrl(taskId)}
+          href={progress.download_url ? resolveApiUrl(progress.download_url) : getDownloadUrl(taskId, 'instagram')}
           className="block text-center px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-semibold transition-colors"
         >
           Download File
@@ -150,18 +154,44 @@ function PostReelDownload() {
 
 function StoriesDownload() {
   const [username, setUsername] = useState('')
-  const [stories, setStories] = useState<string[]>([])
+  const [progress, setProgress] = useState<ProgressState | null>(null)
+  const [taskId, setTaskId] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const stopPolling = useCallback(() => {
+    if (pollingRef.current) {
+      clearInterval(pollingRef.current)
+      pollingRef.current = null
+    }
+  }, [])
 
   const handleFetch = async () => {
     if (!username.trim()) { setError('Enter a username'); return }
     setError('')
-    setStories([])
+    setProgress(null)
+    setTaskId(null)
+    stopPolling()
     setLoading(true)
     try {
-      const data = await fetchInstagramStories(username.trim())
-      setStories(data)
+      const { task_id } = await fetchInstagramStories(username.trim())
+      setTaskId(task_id)
+      pollingRef.current = setInterval(async () => {
+        try {
+          const p = await getProgress(task_id, 'instagram')
+          setProgress(p)
+          if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
+            if (p.status === 'error' || p.status === 'cancelled') {
+              setError(p.error_msg || `Stories download ${p.status}`)
+            }
+            stopPolling()
+          }
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Stories progress fetch failed')
+          stopPolling()
+        }
+      }, 500)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch stories')
     } finally {
@@ -189,8 +219,14 @@ function StoriesDownload() {
       >
         {loading ? 'Fetching...' : 'Fetch Stories'}
       </button>
-      {stories.length > 0 && (
-        <p className="text-green-600 dark:text-green-400 text-sm">{stories.length} stories found</p>
+      <ProgressBar progress={progress} />
+      {progress?.status === 'done' && taskId && (
+        <a
+          href={progress.download_url ? resolveApiUrl(progress.download_url) : getDownloadUrl(taskId, 'instagram')}
+          className="block text-center px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-xl font-semibold transition-colors"
+        >
+          Download Stories File
+        </a>
       )}
     </div>
   )

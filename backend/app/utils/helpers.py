@@ -64,6 +64,79 @@ def generate_task_id() -> str:
     return uuid.uuid4().hex[:12]
 
 
+def _resolve_cookies_path(cookies_file: str) -> str | None:
+    """Resolve cookies file path.
+
+    Returns absolute path if file exists, None otherwise.
+    Tries: as-is → relative to backend/ dir → relative to CWD.
+    """
+    # 1. Check as-is
+    if os.path.isfile(cookies_file):
+        return os.path.abspath(cookies_file)
+    # 2. Check relative to backend directory
+    backend_dir = Path(__file__).resolve().parent.parent.parent
+    candidate = backend_dir / cookies_file
+    if candidate.is_file():
+        return str(candidate.resolve())
+    # 3. Check relative to CWD
+    candidate = Path.cwd() / cookies_file
+    if candidate.is_file():
+        return str(candidate.resolve())
+    return None
+
+
+def apply_cookies(opts: dict, download: bool = False) -> None:
+    """Add cookie source and anti-bot options to yt-dlp opts.
+
+    Strategy:
+      - ALWAYS set cookiefrombrowser — extracts browser cookies at runtime.
+        On Windows, works best when browser is closed; fails gracefully if locked.
+      - ALSO set cookiefile if one exists (env var → auto-detect).
+        This is the primary mode on servers (no browser available).
+      - yt-dlp merges both sources internally.
+
+    Args:
+        opts: yt-dlp options dict (modified in-place)
+        download: True when performing an actual download (not info extract)
+    """
+    from app.config import get_settings
+    settings = get_settings()
+
+    # ── Browser cookies (runtime extraction) ───────────────────
+    # Always set so local dev works without manual cookie export.
+    # yt-dlp tries each browser in order; fails gracefully if all locked.
+    opts["cookiefrombrowser"] = ("chrome", "edge", "firefox")
+
+    # ── Cookies file (manual export / server) ─────────────────
+    # If a cookies.txt file exists, load it as well.
+    # On servers this is the ONLY method that works.
+    cookies_file = settings.YT_DLP_COOKIES_FILE
+    if cookies_file:
+        resolved = _resolve_cookies_path(cookies_file)
+        if resolved:
+            opts["cookiefile"] = resolved
+    if not opts.get("cookiefile"):
+        # Auto-detect default location
+        default_path = _resolve_cookies_path("cookies.txt")
+        if default_path:
+            opts["cookiefile"] = default_path
+
+    # ── User-Agent ─────────────────────────────────────────────
+    if settings.YT_DLP_USER_AGENT:
+        opts["user_agent"] = settings.YT_DLP_USER_AGENT
+
+    # ── YouTube-specific flags (helps avoid bot detection) ─────
+    # Use multiple player clients so the request looks like a real browser
+    extractor_args = opts.get("extractor_args", {}) or {}
+    yt_args = extractor_args.get("youtube", []) or []
+    if not any("player_client" in a for a in yt_args):
+        yt_args.append("player_client=default,mweb,android")
+    if not download and not any("skip" in a for a in yt_args):
+        yt_args.append("skip=webpage,check_formats")
+    extractor_args["youtube"] = yt_args
+    opts["extractor_args"] = extractor_args
+
+
 def clean_old_files(directory: str, max_age_minutes: int = 30):
     """Remove files older than max_age_minutes from directory."""
     cutoff = time.time() - (max_age_minutes * 60)

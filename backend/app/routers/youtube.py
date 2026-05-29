@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Body
 from fastapi.responses import FileResponse
 
 from app.schemas import (
@@ -26,7 +26,7 @@ settings = get_settings()
 
 
 @router.post("/preview", response_model=YouTubePreview)
-def preview_youtube(url: str):
+def preview_youtube(url: str = Body(..., embed=True)):
     """Get video metadata before downloading."""
     if not is_valid_url(url) or not is_youtube_url(url):
         raise HTTPException(400, "Invalid YouTube URL")
