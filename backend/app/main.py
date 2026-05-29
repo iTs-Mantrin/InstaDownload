@@ -51,8 +51,15 @@ app.include_router(analytics.router)
 app.include_router(unified.router)
 
 # ── Serve built frontend (production) ───────────────────────
-FRONTEND_DIST = Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"
-if FRONTEND_DIST.is_dir():
+# Try multiple parent depths to support both Docker (/app/app/../) and local dev (repo/backend/app/../../)
+FRONTEND_DIST = None
+_here = Path(__file__).resolve().parent  # backend/app/
+for _p in [_here.parent, _here.parent.parent]:
+    candidate = _p / "frontend" / "dist"
+    if candidate.is_dir():
+        FRONTEND_DIST = candidate
+        break
+if FRONTEND_DIST and FRONTEND_DIST.is_dir():
     app.mount(
         "/assets",
         StaticFiles(directory=str(FRONTEND_DIST / "assets")),
@@ -61,7 +68,7 @@ if FRONTEND_DIST.is_dir():
 
     @app.get("/", include_in_schema=False)
     async def serve_frontend():
-        return FileResponse(str(FRONTEND_DIST / "index.html"))
+        return FileResponse(str(FRONTEND_DIST / "index.html"))  # type: ignore[union-attr]
 
     # SEO endpoints — must come before the SPA catch-all
     @app.get("/robots.txt", include_in_schema=False)
@@ -90,6 +97,12 @@ if FRONTEND_DIST.is_dir():
         if fp.exists() and fp.is_file():
             return FileResponse(str(fp))
         return FileResponse(str(FRONTEND_DIST / "index.html"))
+else:
+    # Backend-only mode (e.g. separate Railway service) — redirect root to docs
+    @app.get("/", include_in_schema=False)
+    async def backend_root():
+        from fastapi.responses import RedirectResponse
+        return RedirectResponse("/docs")
 
 
 # ── Main ─────────────────────────────────────────────────────

@@ -1,4 +1,6 @@
-const API_BASE = '/api'
+// Set VITE_API_URL to your backend URL for Railway (e.g. https://backend.railway.app)
+// Falls back to `/api` for local dev proxy or single-service setup
+const API_BASE: string = import.meta.env.VITE_API_URL || '/api'
 
 export interface ProgressState {
   percent: number

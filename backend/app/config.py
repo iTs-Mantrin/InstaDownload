@@ -14,9 +14,8 @@ class Settings:
     # Server
     HOST: str = os.environ.get("HOST", "0.0.0.0")
     PORT: int = int(os.environ.get("PORT", "8000"))
-    CORS_ORIGINS: list[str] = os.environ.get(
-        "CORS_ORIGINS", "http://localhost:5173,http://localhost:3000"
-    ).split(",")
+    # Use "*" for development. In production, set to specific origins like "https://frontend.railway.app"
+    CORS_ORIGINS: list[str] = os.environ.get("CORS_ORIGINS", "*").split(",")
 
     # Database (PostgreSQL)
     DATABASE_URL: str = os.environ.get(

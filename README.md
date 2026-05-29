@@ -13,6 +13,7 @@ Download videos and audio from **YouTube** and **Instagram** — fast, free, and
 - **Dark / Light mode**
 - **Mobile responsive**
 - **Paste URL auto-detection** — paste any link and the app navigates to the right tool
+- **Ad-ready** — ad unit placeholders on every page
 
 ## Quick Start (local)
 
@@ -25,15 +26,12 @@ Download videos and audio from **YouTube** and **Instagram** — fast, free, and
 ### Backend
 
 ```bash
-# Install Python dependencies
 cd backend
 pip install -r requirements.txt
-
-# Start the server
 uvicorn app.main:app --reload --port 8000
 ```
 
-The API is available at `http://localhost:8000`.
+API at `http://localhost:8000`.
 
 ### Frontend (development)
 
@@ -43,9 +41,9 @@ npm install
 npm run dev
 ```
 
-Frontend dev server starts at `http://localhost:5173` with API proxy to `:8000`.
+Dev server at `http://localhost:5173` — proxies `/api` to the backend.
 
-### Production build
+### Production build (single-service)
 
 ```bash
 cd frontend
@@ -54,55 +52,106 @@ npm run build
 
 Then start the backend — it serves the built frontend automatically.
 
-## Docker
+---
+
+## Deploy to Railway (two services)
+
+The app is split into **two Railway services**:
+
+| Service | Type | Root dir | Port |
+|---|---|---|---|
+| **Backend** | Docker service | `backend/` | 8000 |
+| **Frontend** | Static Site | `frontend/` | 443 |
+
+### 1. Push to GitHub
 
 ```bash
-# Build and run with PostgreSQL + Redis
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin https://github.com/YOUR_USER/instadownload.git
+git push -u origin main
+```
+
+### 2. Create Backend Service
+
+1. Go to [Railway dashboard](https://railway.app) → **New Project** → **Deploy from GitHub repo**
+2. Select your repo
+3. Railway auto-detects `railway.json` and builds from `backend/Dockerfile`
+4. Wait for the build to finish (first deploy will fail — expected, env vars missing)
+
+### 3. Add Environment Variables (Backend)
+
+In **Variables** tab, set:
+
+| Variable | Value |
+|---|---|
+| `SECRET_KEY` | `openssl rand -hex 32` (run this command) |
+| `PORT` | `8000` |
+| `CORS_ORIGINS` | `*` (or lock to your frontend URL later) |
+| `DOWNLOAD_DIR` | `/tmp/instadownload` |
+
+Optional but recommended — click **Add a Database** → **PostgreSQL** and **Redis**. Railway auto-injects `DATABASE_URL` and `REDIS_URL`.
+
+### 4. Generate Backend Domain
+
+1. Go to **Networking** tab → **Generate Domain**
+2. Copy the URL — you'll need it for the frontend build
+3. Example: `https://backend-production-1234.up.railway.app`
+
+### 5. Create Frontend Service
+
+1. In the same Railway project, click **New** → **Static Site**
+2. Select the same GitHub repo
+3. Configure:
+
+| Setting | Value |
+|---|---|
+| **Root Directory** | `frontend` |
+| **Build Command** | `npm install && npm run build` |
+| **Publish Directory** | `dist` |
+
+4. Add a **build variable** (NOT a regular variable):
+
+| Variable | Value |
+|---|---|
+| **VITE_API_URL** | `https://your-backend.railway.app` (from step 4) |
+
+5. Click **Deploy**
+
+### 6. Generate Frontend Domain
+
+Go to the frontend service **Networking** tab → **Generate Domain**.
+
+Your app is live at `https://frontend-production-xxxx.up.railway.app`.
+
+### 7. Verify it works
+
+Visit your frontend URL. Paste a YouTube URL and try downloading.
+
+Check the backend health:
+```
+https://your-backend.railway.app/api/health
+```
+
+Should return: `{"status": "ok", "app": "InstaDownload", ...}`
+
+---
+
+## Docker (single-service, local)
+
+```bash
 docker compose up --build
 ```
 
-Or just the app without a database:
+Runs the app + PostgreSQL + Redis in a single stack.
+
+Or just the app standalone:
 
 ```bash
 docker build -t instadownload .
-docker run -p 8000:8000 -e DATABASE_URL= sqlite:///./data.db instadownload
+docker run -p 8000:8000 -e DATABASE_URL=sqlite:///./data.db instadownload
 ```
-
-## Deploy to Railway
-
-Railway auto-detects the `Dockerfile` and `railway.json` in this repo. The app includes all config-as-code for a smooth deployment.
-
-### Step-by-step
-
-1. **Push the repo to GitHub** if you haven't already.
-
-2. **Go to [Railway](https://railway.app) → New Project → Deploy from GitHub repo.** Select your repository.
-
-3. Railway auto-detects the `Dockerfile` and builds the app. No additional build commands needed.
-
-4. **Add a PostgreSQL database:**
-   - In your Railway project dashboard, click **Add a Database** → **PostgreSQL**.
-   - Railway automatically injects the `DATABASE_URL` into your app's environment.
-
-5. **Add Redis (optional — required for queue features):**
-   - Click **Add a Database** → **Redis**.
-   - Railway injects the `REDIS_URL` into your app's environment.
-
-6. **Set required environment variables** in the Variables tab:
-   - `SECRET_KEY` — generate a random string (`openssl rand -hex 32`)
-   - `DOWNLOAD_DIR` — set to `/tmp/instadownload` (default)
-
-7. **Generate a public domain:**
-   - Go to the **Networking** tab → **Generate Domain**.
-   - Your app is live at `https://your-app.railway.app`.
-
-### Health checks
-
-The app exposes `/api/health` which Railway uses to verify the deployment is ready. Configured in `railway.json`.
-
-### GitHub deploy (zero-downtime)
-
-Every push to your default branch triggers an automatic deployment. Railway performs rolling updates — zero downtime.
 
 ## Environment Variables
 
@@ -116,14 +165,20 @@ Every push to your default branch triggers an automatic deployment. Railway perf
 | `REDIS_URL` | `redis://localhost:6379/0` | Redis connection string |
 | `DOWNLOAD_DIR` | `/tmp/instadownload` | Temp download directory |
 | `MAX_FILE_AGE_MINUTES` | `30` | Auto-cleanup age for downloads |
-| `CORS_ORIGINS` | `http://localhost:5173,...` | Allowed CORS origins |
+| `CORS_ORIGINS` | `*` | Allowed CORS origins (comma-separated) |
 | `YT_DLP_COOKIES_FILE` | — | Path to Netscape-format cookies file |
+
+### Frontend build-time env
+
+| Variable | Purpose |
+|---|---|
+| `VITE_API_URL` | Backend URL (required for two-service Railway setup) |
 
 ## Tech Stack
 
 - **Backend**: FastAPI, SQLAlchemy (async), PostgreSQL, Redis, yt-dlp
 - **Frontend**: React 19, TypeScript, Vite, Tailwind CSS 4
-- **Deployment**: Docker, Railway-ready
+- **Deployment**: Docker, Railway
 
 ## License
 
