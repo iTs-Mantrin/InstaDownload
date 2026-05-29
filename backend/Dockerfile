@@ -1,3 +1,17 @@
+# ── Stage 1: Build frontend ──────────────────────────────
+FROM node:20-slim AS frontend-builder
+
+WORKDIR /build
+
+# Install dependencies (cached separately)
+COPY frontend/package*.json ./
+RUN npm ci
+
+# Copy and build
+COPY frontend/ .
+RUN npm run build
+
+# ── Stage 2: Python backend ──────────────────────────────
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -8,11 +22,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Python deps
-COPY requirements.txt .
+COPY backend/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy backend source
-COPY . .
+COPY backend/ .
+
+# Copy built frontend from Stage 1
+COPY --from=frontend-builder /build/dist frontend/dist
 
 # Use PORT from Railway env
 ENV HOST=0.0.0.0
