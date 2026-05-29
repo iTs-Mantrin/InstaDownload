@@ -138,19 +138,12 @@ Should return: `{"status": "ok", "app": "InstaDownload", ...}`
 
 ---
 
-## Docker (single-service, local)
+## Docker (backend only, local)
 
 ```bash
-docker compose up --build
-```
-
-Runs the app + PostgreSQL + Redis in a single stack.
-
-Or just the app standalone:
-
-```bash
-docker build -t instadownload .
-docker run -p 8000:8000 -e DATABASE_URL=sqlite:///./data.db instadownload
+cd backend
+docker build -t instadownload-backend .
+docker run -p 8000:8000 instadownload-backend
 ```
 
 ## Environment Variables
