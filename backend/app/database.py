@@ -15,8 +15,17 @@ class Base(DeclarativeBase):
     pass
 
 
+import logging
+logger = logging.getLogger(__name__)
+
+
 async def init_db():
-    """Create async engine and session factory if DATABASE_URL is set."""
+    """Create async engine and session factory if DATABASE_URL is set.
+
+    Table creation (``metadata.create_all``) is wrapped in a try/except
+    so that a transient database outage does **not** crash the application
+    during startup.  Query-time errors will still surface naturally.
+    """
     global engine, async_session_factory
 
     if not settings.db_configured:
@@ -33,16 +42,26 @@ async def init_db():
         pool_size=5,
         max_overflow=10,
         pool_pre_ping=True,
+        connect_args={"timeout": 10},
     )
 
     async_session_factory = async_sessionmaker(
         engine, class_=AsyncSession, expire_on_commit=False
     )
 
-    # Create tables
-    async with engine.begin() as conn:
-        from app.models.download import DownloadRecord  # noqa: F401 — register model
-        await conn.run_sync(Base.metadata.create_all)
+    # Create tables (non-fatal on failure)
+    try:
+        async with engine.begin() as conn:
+            from app.models.download import DownloadRecord  # noqa: F401 — register model
+            await conn.run_sync(Base.metadata.create_all)
+        logger.info("Database tables verified / created.")
+    except Exception as exc:
+        logger.warning(
+            "Database unreachable during startup — running without DB persistence. Error: %s",
+            exc,
+        )
+        # Engine is still created; if the DB comes back later, queries
+        # that use ``get_session`` will error with a clear message.
 
 
 async def close_db():
