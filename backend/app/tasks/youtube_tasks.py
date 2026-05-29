@@ -28,6 +28,13 @@ logger = logging.getLogger(__name__)
 
 _FFMPEG_PATH = find_ffmpeg()
 
+
+def _normalize_audio_quality(q: str) -> str:
+    """Extract numeric bitrate from quality strings like '192kbps', '320k', '128'."""
+    import re
+    m = re.search(r"(\d+)", q)
+    return m.group(1) if m else "192"
+
 # ── Redis progress helpers ────────────────────────────────────
 
 _PROGRESS_PREFIX = "ytdl:progress:"
@@ -320,7 +327,7 @@ def download_audio(
             {
                 "key": "FFmpegExtractAudio",
                 "preferredcodec": "mp3",
-                "preferredquality": quality,
+                "preferredquality": _normalize_audio_quality(quality),
             }
         ]
 

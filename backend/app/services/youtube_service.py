@@ -307,7 +307,7 @@ class YouTubeService:
                 opts["postprocessors"] = [{
                     "key": "FFmpegExtractAudio",
                     "preferredcodec": "mp3",
-                    "preferredquality": "192",
+                    "preferredquality": __import__("app.tasks.youtube_tasks", fromlist=["_normalize_audio_quality"])._normalize_audio_quality(quality),
                 }]
             else:
                 quality_map = {

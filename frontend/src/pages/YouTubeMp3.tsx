@@ -119,9 +119,9 @@ export default function YouTubeMp3() {
                 onChange={(e) => setQuality(e.target.value)}
                 className="w-full px-3 py-2.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
               >
-                <option value="128kbps">128kbps (Standard)</option>
-                <option value="192kbps">192kbps (High)</option>
-                <option value="320kbps">320kbps (Ultra)</option>
+                <option value="128">128kbps (Standard)</option>
+                <option value="192">192kbps (High)</option>
+                <option value="320">320kbps (Ultra)</option>
               </select>
             </div>
             <button

@@ -63,8 +63,10 @@ def get_youtube_progress(task_id: str):
     if state is None:
         raise HTTPException(404, "Task not found")
 
-    download_url = None
-    if state["status"] == "done" and state["output_path"]:
+    # If the task provided a download_url (e.g. S3 presigned URL), use it.
+    # Otherwise fall back to the local file endpoint.
+    download_url = state.get("download_url") or None
+    if not download_url and state["status"] == "done" and state["output_path"]:
         download_url = f"/api/youtube/file/{task_id}"
 
     return ProgressResponse(
