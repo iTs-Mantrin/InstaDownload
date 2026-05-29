@@ -39,8 +39,11 @@ class Settings:
     PORT: int = int(os.environ.get("PORT", "8000"))
     CORS_ORIGINS: list[str] = os.environ.get("CORS_ORIGINS", "*").split(",")
 
-    # Redis (optional — used for cache, no crash if missing)
+    # Redis — cache (async) + Celery broker/backend (separate connection pool)
     REDIS_URL: str = os.environ.get("REDIS_URL", "")
+    REDIS_CELERY_URL: str = os.environ.get("REDIS_CELERY_URL", "") or os.environ.get(
+        "REDIS_URL", "redis://localhost:6379/0"
+    )
 
     # Downloads
     DOWNLOAD_DIR: str = os.environ.get("DOWNLOAD_DIR", "/tmp/instadownload")
@@ -72,6 +75,22 @@ class Settings:
         if "YOUR-PASSWORD" in url or "YOUR_SUPABASE_DB_PASSWORD" in url:
             return False
         return True
+
+    # Storage
+    STORAGE_BACKEND: str = os.environ.get("STORAGE_BACKEND", "local")
+
+    # S3 (used when STORAGE_BACKEND=s3)
+    AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID", "")
+    AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY", "")
+    S3_BUCKET_NAME: str = os.environ.get("S3_BUCKET_NAME", "")
+    S3_REGION: str = os.environ.get("S3_REGION", "us-east-1")
+    S3_ENDPOINT_URL: str | None = os.environ.get("S3_ENDPOINT_URL") or None
+    S3_PRESIGN_TTL: int = int(os.environ.get("S3_PRESIGN_TTL", "3600"))
+
+    # Celery
+    CELERY_WORKER_CONCURRENCY: int = int(
+        os.environ.get("CELERY_WORKER_CONCURRENCY", "4")
+    )
 
     # yt-dlp
     YT_DLP_COOKIES_FILE: str | None = os.environ.get("YT_DLP_COOKIES_FILE")

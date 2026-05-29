@@ -1,4 +1,5 @@
 import { Routes, Route } from 'react-router-dom'
+import Navbar from './components/Navbar.tsx'
 import Layout from './components/Layout.tsx'
 import Home from './pages/Home.tsx'
 import YouTubePage from './pages/YouTube.tsx'
@@ -12,19 +13,22 @@ import Dmca from './pages/Dmca.tsx'
 
 function App() {
   return (
-    <Layout>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/youtube" element={<YouTubePage />} />
-        <Route path="/youtube-mp3" element={<YouTubeMp3 />} />
-        <Route path="/instagram" element={<InstagramPage />} />
-        <Route path="/instagram-story" element={<InstagramStory />} />
-        <Route path="/contact" element={<Contact />} />
-        <Route path="/privacy" element={<Privacy />} />
-        <Route path="/terms" element={<Terms />} />
-        <Route path="/dmca" element={<Dmca />} />
-      </Routes>
-    </Layout>
+    <>
+      <Navbar />
+      <Layout>
+        <Routes>
+          <Route path="/" element={<Home />} />
+          <Route path="/youtube" element={<YouTubePage />} />
+          <Route path="/youtube-mp3" element={<YouTubeMp3 />} />
+          <Route path="/instagram" element={<InstagramPage />} />
+          <Route path="/instagram-story" element={<InstagramStory />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/dmca" element={<Dmca />} />
+        </Routes>
+      </Layout>
+    </>
   )
 }
 
