@@ -26,11 +26,11 @@ COPY backend/ .
 # Copy built frontend
 COPY --from=frontend-builder /app/frontend/dist /app/frontend/dist
 
-# Default env
+# Default env (PORT is overridden by Railway's $PORT at runtime)
 ENV HOST=0.0.0.0
 ENV PORT=8000
 ENV DOWNLOAD_DIR=/tmp/instadownload
 
-EXPOSE 8000
+EXPOSE $PORT
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}

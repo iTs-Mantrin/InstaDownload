@@ -70,14 +70,39 @@ docker run -p 8000:8000 -e DATABASE_URL= sqlite:///./data.db instadownload
 
 ## Deploy to Railway
 
-1. Push to a GitHub repository
-2. Connect the repo on [Railway](https://railway.app)
-3. The `Procfile` and `Dockerfile` are included for auto-detection
-4. Set environment variables:
-   - `SECRET_KEY` — a random secret string
-   - `DATABASE_URL` — your PostgreSQL connection string (Railway provides this)
-   - `REDIS_URL` — your Redis connection string (optional)
-   - `DOWNLOAD_DIR` — path for temporary download files (default: `/tmp/instadownload`)
+Railway auto-detects the `Dockerfile` and `railway.json` in this repo. The app includes all config-as-code for a smooth deployment.
+
+### Step-by-step
+
+1. **Push the repo to GitHub** if you haven't already.
+
+2. **Go to [Railway](https://railway.app) → New Project → Deploy from GitHub repo.** Select your repository.
+
+3. Railway auto-detects the `Dockerfile` and builds the app. No additional build commands needed.
+
+4. **Add a PostgreSQL database:**
+   - In your Railway project dashboard, click **Add a Database** → **PostgreSQL**.
+   - Railway automatically injects the `DATABASE_URL` into your app's environment.
+
+5. **Add Redis (optional — required for queue features):**
+   - Click **Add a Database** → **Redis**.
+   - Railway injects the `REDIS_URL` into your app's environment.
+
+6. **Set required environment variables** in the Variables tab:
+   - `SECRET_KEY` — generate a random string (`openssl rand -hex 32`)
+   - `DOWNLOAD_DIR` — set to `/tmp/instadownload` (default)
+
+7. **Generate a public domain:**
+   - Go to the **Networking** tab → **Generate Domain**.
+   - Your app is live at `https://your-app.railway.app`.
+
+### Health checks
+
+The app exposes `/api/health` which Railway uses to verify the deployment is ready. Configured in `railway.json`.
+
+### GitHub deploy (zero-downtime)
+
+Every push to your default branch triggers an automatic deployment. Railway performs rolling updates — zero downtime.
 
 ## Environment Variables
 
