@@ -35,6 +35,11 @@ export default function Privacy() {
           deleted from our servers within 30 minutes.
         </p>
 
+      </section>
+
+      <AdUnit className="max-w-2xl mx-auto" slot={ADS.IN_CONTENT_2} />
+
+      <section className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed">
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">3. Third-Party Services</h2>
         <p>
           We display ads via Google AdSense. Google may use cookies to serve personalized ads based on

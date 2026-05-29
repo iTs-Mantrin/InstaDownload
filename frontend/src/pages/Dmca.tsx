@@ -41,7 +41,11 @@ export default function Dmca() {
           <li>A statement that you have a good faith belief the use is not authorized.</li>
           <li>A statement, under penalty of perjury, that the information is accurate and you are authorized to act.</li>
         </ul>
+      </section>
 
+      <AdUnit className="max-w-2xl mx-auto" slot={ADS.IN_CONTENT_2} />
+
+      <section className="space-y-4 text-slate-700 dark:text-slate-300 leading-relaxed">
         <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Send Notices To</h2>
         <div className="bg-slate-100 dark:bg-slate-800 rounded-xl p-5 space-y-1">
           <p><strong>Email:</strong> dmca@instadownload.app</p>

@@ -1,5 +1,7 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import { Link, useLocation } from 'react-router-dom'
+import AdUnit from './AdUnit.tsx'
+import { ADS } from '../ads.ts'
 
 const NAV = [
   { label: 'Home', path: '/' },
@@ -123,6 +125,11 @@ export default function Layout({ children }: { children: ReactNode }) {
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 py-8">
         {children}
       </main>
+
+      {/* Footer ad */}
+      <div className="max-w-6xl mx-auto px-4 py-4">
+        <AdUnit slot={ADS.FOOTER} />
+      </div>
 
       {/* Footer */}
       <footer className="border-t border-slate-200 dark:border-slate-800 py-8 text-sm text-slate-500 dark:text-slate-500 transition-colors">

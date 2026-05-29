@@ -60,6 +60,8 @@ export default function Contact() {
         </button>
       </form>
 
+      <AdUnit className="max-w-2xl mx-auto" slot={ADS.IN_CONTENT} />
+
       <AdUnit className="max-w-2xl mx-auto" slot={ADS.BANNER_BOTTOM} />
     </div>
   )

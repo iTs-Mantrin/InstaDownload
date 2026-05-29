@@ -124,6 +124,8 @@ export default function InstagramStory() {
 
       <AdUnit className="max-w-3xl mx-auto" slot={ADS.BANNER_BOTTOM} />
 
+      <AdUnit className="max-w-3xl mx-auto" slot={ADS.IN_CONTENT} />
+
       <section className="max-w-3xl mx-auto prose dark:prose-invert">
         <h2 className="text-2xl font-bold mb-4">How to Download Instagram Stories</h2>
         <ol className="space-y-4 list-decimal pl-5">
