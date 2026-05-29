@@ -7,7 +7,7 @@ from typing import Optional
 
 import yt_dlp
 
-from app.utils.helpers import find_ffmpeg, generate_task_id
+from app.utils.helpers import find_ffmpeg, generate_task_id, snapshot_directory, find_new_output, save_task_state
 
 _FFMPEG_PATH = find_ffmpeg()
 
@@ -166,25 +166,30 @@ class YouTubeService:
             else:
                 opts["format"] = YouTubeService._resolve_format(quality)
 
+            # Snapshot before so we can detect the new output file
+            before = snapshot_directory(download_dir)
+
             with yt_dlp.YoutubeDL(opts) as ydl:
                 ydl.download([url.strip()])
 
-            state["status"] = "done"
+            output_suffix = ".mp3" if audio_only else ".mp4"
+            output_path = find_new_output(before, download_dir, suffix=output_suffix)
+            state["output_path"] = output_path
+            state["status"] = "done" if output_path else "error"
             state["percent"] = 100.0
-            state["output_path"] = YouTubeService._find_output(download_dir)
+            state["before_snapshot"] = list(before)
+            state["new_files"] = [output_path] if output_path else []
+            if not output_path:
+                state["error_msg"] = "Output file not found after download"
+
+            # Persist to disk so state survives container restarts
+            save_task_state(task_id, state, download_dir)
 
         except Exception as e:
             state["status"] = "error"
             state["error_msg"] = str(e)
+            state["before_snapshot"] = list(before)
+            state["new_files"] = []
+            save_task_state(task_id, state, download_dir)
 
-    @staticmethod
-    def _find_output(directory: str) -> str:
-        files = sorted(
-            Path(directory).iterdir(),
-            key=lambda f: f.stat().st_mtime,
-            reverse=True,
-        )
-        for f in files:
-            if f.is_file():
-                return str(f.resolve())
-        return ""
+

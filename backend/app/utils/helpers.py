@@ -2,6 +2,7 @@
 
 import os
 import re
+import json
 import uuid
 import time
 import glob
@@ -108,3 +109,80 @@ def find_ffmpeg() -> str | None:
     except Exception:
         pass
     return None
+
+
+# ── Download output helpers ───────────────────────────────────
+
+
+def snapshot_directory(directory: str) -> set[str]:
+    """Return set of filenames in directory (empty if doesn't exist)."""
+    try:
+        return {p.name for p in Path(directory).iterdir()}
+    except Exception:
+        return set()
+
+
+def find_new_output(
+    before: set[str], download_dir: str, suffix: str = ""
+) -> str:
+    """Find the newest completed file in download_dir that wasn't in `before`.
+
+    Filters out .part / .fragment / .ytdl temp files.
+    If suffix is set (e.g. '.mp4'), only files ending with that suffix match.
+    Returns absolute path string, or '' if nothing found.
+    """
+    try:
+        after = set()
+        for p in Path(download_dir).iterdir():
+            name = p.name
+            # Skip temp files
+            if any(name.endswith(ext) for ext in (".part", ".fragment", ".ytdl")):
+                continue
+            after.add(name)
+
+        new_names = after - before
+        candidates = []
+        for name in new_names:
+            fp = Path(download_dir) / name
+            if fp.is_file():
+                if suffix and not name.endswith(suffix):
+                    continue
+                candidates.append(fp)
+
+        if not candidates:
+            return ""
+
+        candidates.sort(key=lambda f: f.stat().st_mtime, reverse=True)
+        return str(candidates[0].resolve())
+    except Exception:
+        return ""
+
+
+def save_task_state(task_id: str, state: dict, download_dir: str):
+    """Persist completed task state to disk so it survives container restarts."""
+    persist = {
+        "status": state.get("status", ""),
+        "output_path": state.get("output_path", ""),
+        "filename": state.get("filename", ""),
+        "before_snapshot": list(state.get("before_snapshot", [])),
+        "new_files": list(state.get("new_files", [])),
+        "percent": state.get("percent", 0.0),
+        "error_msg": state.get("error_msg", ""),
+    }
+    try:
+        os.makedirs(download_dir, exist_ok=True)
+        task_file = os.path.join(download_dir, f".task_{task_id}.json")
+        with open(task_file, "w") as f:
+            json.dump(persist, f, indent=2)
+    except Exception:
+        pass
+
+
+def load_task_state(task_id: str, download_dir: str) -> dict | None:
+    """Recover completed task state from disk marker."""
+    task_file = os.path.join(download_dir, f".task_{task_id}.json")
+    try:
+        with open(task_file) as f:
+            return json.load(f)
+    except Exception:
+        return None

@@ -20,6 +20,7 @@ from app.utils.helpers import (
     is_valid_url,
     generate_task_id,
     clean_old_files,
+    load_task_state,
 )
 from app.config import get_settings
 
@@ -90,11 +91,14 @@ def unified_progress(task_id: str):
         state = InstagramService.get_progress(task_id)
         source = "instagram"
 
+    # Fallback: recover from disk (survives container restarts)
     if state is None:
-        raise HTTPException(404, "Task not found")
+        state = load_task_state(task_id, settings.DOWNLOAD_DIR)
+        if state is None:
+            raise HTTPException(404, "Task not found")
 
     download_url = None
-    if state["status"] == "done" and state.get("output_path"):
+    if state and state["status"] == "done" and state.get("output_path"):
         download_url = f"/api/file/{task_id}"
 
     return ProgressResponse(
@@ -118,15 +122,27 @@ def unified_file(task_id: str):
         state = InstagramService.get_progress(task_id)
         svc = InstagramService
 
+    # Fallback: recover from disk (survives container restarts)
     if state is None:
-        raise HTTPException(404, "Task not found")
+        state = load_task_state(task_id, settings.DOWNLOAD_DIR)
+        if state is None:
+            raise HTTPException(404, "Task not found")
+
     if state["status"] != "done":
         raise HTTPException(400, "Download not yet complete")
     if not state.get("output_path") or not os.path.isfile(state["output_path"]):
-        raise HTTPException(404, "File not found")
+        raise HTTPException(440, "File not found")
 
     filename = os.path.basename(state["output_path"])
-    svc.remove_task(task_id)
+
+    # Try to remove task from both services if source is unknown after disk recovery
+    # This is a pragmatic workaround; a better solution would be to persist 'source' in task state.
+    if svc == YouTubeService:  # if svc is still YouTubeService, it means it wasn't found in-memory in either service
+        YouTubeService.remove_task(task_id)
+        InstagramService.remove_task(task_id)
+    else:
+        svc.remove_task(task_id)
+
     return FileResponse(
         path=state["output_path"],
         filename=filename,
