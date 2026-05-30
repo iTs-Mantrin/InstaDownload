@@ -8,7 +8,7 @@ import Seo from '../components/Seo.tsx'
 
 export default function YouTubeMp3() {
   const [url, setUrl] = useState('')
-  const [quality, setQuality] = useState('192kbps')
+  const [quality, setQuality] = useState('192')
   const [progress, setProgress] = useState<ProgressState | null>(null)
   const [preview, setPreview] = useState<PreviewInfo | null>(null)
   const [loading, setLoading] = useState(false)
