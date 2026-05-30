@@ -49,3 +49,40 @@ class DownloadedFile(BaseModel):
     directory: Path
 
     model_config = {"arbitrary_types_allowed": True}
+
+
+# ── Frontend-compatible schemas (match TypeScript interfaces in client.ts) ──
+
+
+class FrontendFormatInfo(BaseModel):
+    format_id: str
+    height: int | None = None
+    ext: str = ""
+    filesize: int | None = None
+    vcodec: str = ""
+    acodec: str = ""
+    tbr: float | None = None
+
+
+class FrontendPreviewResponse(BaseModel):
+    title: str
+    duration: int = 0
+    uploader: str = "Unknown"
+    webpage_url: str = ""
+    thumbnail: str = ""
+    formats: list[FrontendFormatInfo] = []
+
+
+class FrontendProgressResponse(BaseModel):
+    percent: float = 0.0
+    speed: str = ""
+    eta: str = ""
+    filename: str = ""
+    status: str = "queued"
+    error_msg: str = ""
+    download_url: str | None = None
+
+
+class FrontendDownloadResponse(BaseModel):
+    task_id: str
+    source: str = "youtube"
