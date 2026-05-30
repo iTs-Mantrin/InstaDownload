@@ -1,10 +1,13 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl, resolveApiUrl } from '../api/client.ts'
 import type { ProgressState, PreviewInfo } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
 import { ADS } from '../ads.ts'
 import Seo from '../components/Seo.tsx'
+
+const MAX_POLLS = 240        // 240 polls × 500ms = 2 minutes before giving up
+const POLL_INTERVAL_MS = 500
 
 export default function YouTubeMp3() {
   const [url, setUrl] = useState('')
@@ -15,6 +18,20 @@ export default function YouTubeMp3() {
   const [error, setError] = useState('')
   const [taskId, setTaskId] = useState<string | null>(null)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef<number>(0)
+  const mountedRef = useRef<boolean>(true)
+
+  // Cleanup polling + mark unmounted on unmount
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [])
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
@@ -49,9 +66,20 @@ export default function YouTubeMp3() {
       setTaskId(task_id)
       setLoading(false)
 
+      pollCountRef.current = 0
       pollingRef.current = setInterval(async () => {
+        pollCountRef.current++
+        if (pollCountRef.current > MAX_POLLS) {
+          stopPolling()
+          if (mountedRef.current) {
+            setError('Download timed out. YouTube may be blocking this request. The server may need authentication cookies set up.')
+          }
+          return
+        }
+
         try {
           const p = await getProgress(task_id, 'youtube')
+          if (!mountedRef.current) return
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
             if (p.status === 'error' || p.status === 'cancelled') {
@@ -60,10 +88,11 @@ export default function YouTubeMp3() {
             stopPolling()
           }
         } catch (err) {
+          if (!mountedRef.current) return
           setError(err instanceof Error ? err.message : 'Progress fetch failed')
           stopPolling()
         }
-      }, 500)
+      }, POLL_INTERVAL_MS)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Download failed')
       setLoading(false)

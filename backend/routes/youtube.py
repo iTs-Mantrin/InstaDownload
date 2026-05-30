@@ -1,4 +1,5 @@
 import threading
+import time
 from pathlib import Path
 
 from fastapi import APIRouter, HTTPException, Request
@@ -10,6 +11,9 @@ from yt_dlp.utils import DownloadError
 from utils.download_manager import DownloadTask, TaskCancelledError, manager
 from utils.temp_files import find_downloaded_file
 from utils.config import get_settings
+
+# If no download progress for this many seconds, mark the task as stalled.
+_STALL_TIMEOUT_SECONDS = 120
 
 router = APIRouter(prefix="/youtube", tags=["youtube-frontend"])
 
@@ -169,12 +173,42 @@ def _run_download(task: DownloadTask, url: str, quality: str, audio_only: bool, 
     settings = get_settings()
     try:
         output_template = str(task.directory / "%(title).120B-%(id)s.%(ext)s")
+
+        # ── Progress watchdog ──────────────────────────────────────────
+        # If yt-dlp hangs during init or download (no progress hook calls),
+        # this thread will mark the task as errored after STALL_TIMEOUT.
+        last_progress_time: list[float] = [time.time()]
+
+        def _watchdog() -> None:
+            while True:
+                time.sleep(15)
+                if task.status in ("done", "error", "cancelled"):
+                    return
+                if time.time() - last_progress_time[0] > _STALL_TIMEOUT_SECONDS:
+                    task.status = "error"
+                    task.error_msg = (
+                        "Download stalled — no progress for over 2 minutes. "
+                        "YouTube may be blocking this request. "
+                        "The server owner should set YT_DLP_COOKIES_FILE with a valid cookies.txt file."
+                    )
+                    return
+
+        watchdog_thread = threading.Thread(target=_watchdog, daemon=True)
+        watchdog_thread.start()
+
+        # Wrap the progress hook so it keeps the watchdog alive
+        _original_progress_hook = _make_progress_hook(task)
+
+        def _watchdog_progress_hook(d: dict) -> None:
+            last_progress_time[0] = time.time()
+            _original_progress_hook(d)
+
         options = {
             "quiet": True,
             "no_warnings": True,
             "noplaylist": True,
             "outtmpl": output_template,
-            "progress_hooks": [_make_progress_hook(task)],
+            "progress_hooks": [_watchdog_progress_hook],
             "extractor_retries": 2,
             "socket_timeout": 30,
             "cookiefile": settings.yt_dlp_cookies_file,
