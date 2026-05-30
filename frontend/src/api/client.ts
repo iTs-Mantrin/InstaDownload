@@ -114,3 +114,33 @@ export async function fetchInstagramStories(username: string): Promise<DownloadR
 export function getProfilePicUrl(username: string): string {
   return `${API_BASE}/instagram/profile-pic/${encodeURIComponent(username)}`
 }
+
+// ── Instagram User Feed ───────────────────────────────────────
+
+export interface UserMediaItem {
+  id: string
+  url: string
+  title: string
+  thumbnail: string
+  duration: number | null
+  source: 'profile' | 'story'
+}
+
+export interface UserFeedResponse {
+  username: string
+  media: UserMediaItem[]
+  media_count: number
+}
+
+export async function fetchInstagramUserFeed(username: string): Promise<UserFeedResponse> {
+  const res = await fetch(`${API_BASE}/instagram/user-feed`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ username }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ detail: res.statusText }))
+    throw new Error(err.detail || 'Failed to fetch user feed')
+  }
+  return res.json()
+}

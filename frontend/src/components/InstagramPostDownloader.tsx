@@ -1,7 +1,10 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { startDownload, getProgress, getDownloadUrl, cancelTask, resolveApiUrl } from '../api/client.ts'
 import type { ProgressState } from '../api/client.ts'
 import ProgressBar from './ProgressBar.tsx'
+
+const MAX_POLLS = 240
+const POLL_INTERVAL_MS = 500
 
 interface InstagramPostDownloaderProps {
   initialUrl?: string
@@ -15,6 +18,20 @@ export default function InstagramPostDownloader({ initialUrl = '', className = '
   const [loading, setLoading] = useState(false)
   const [taskId, setTaskId] = useState<string | null>(null)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef<number>(0)
+  const mountedRef = useRef<boolean>(true)
+
+  // Cleanup on unmount
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [])
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
@@ -39,9 +56,20 @@ export default function InstagramPostDownloader({ initialUrl = '', className = '
       setTaskId(task_id)
       setLoading(false)
 
+      pollCountRef.current = 0
       pollingRef.current = setInterval(async () => {
+        pollCountRef.current++
+        if (pollCountRef.current > MAX_POLLS) {
+          stopPolling()
+          if (mountedRef.current) {
+            setError('Download timed out. The server may be experiencing issues.')
+          }
+          return
+        }
+
         try {
           const p = await getProgress(task_id, 'instagram')
+          if (!mountedRef.current) return
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
             if (p.status === 'error' || p.status === 'cancelled') {
@@ -50,10 +78,11 @@ export default function InstagramPostDownloader({ initialUrl = '', className = '
             stopPolling()
           }
         } catch (err) {
+          if (!mountedRef.current) return
           setError(err instanceof Error ? err.message : 'Progress fetch failed')
           stopPolling()
         }
-      }, 500)
+      }, POLL_INTERVAL_MS)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Download failed')
       setLoading(false)

@@ -120,6 +120,8 @@ def _extract_raw_info(url: str) -> dict:
         "skip_download": True,
         "no_warnings": True,
         "noplaylist": True,
+        "extractor_retries": 2,
+        "socket_timeout": 30,
         "cookiefile": settings.yt_dlp_cookies_file,
     }
     try:
@@ -135,6 +137,12 @@ def _extract_raw_info(url: str) -> dict:
             raise HTTPException(status_code=403, detail="This video is age-restricted.")
         if "video unavailable" in lowered or "not available" in lowered:
             raise HTTPException(status_code=404, detail="The requested video is unavailable.")
+        if "sign in to confirm" in lowered and "bot" in lowered:
+            raise HTTPException(
+                status_code=403,
+                detail="YouTube requires authentication. The server needs cookies set up. "
+                       "Set YT_DLP_COOKIES_FILE environment variable with a valid cookies.txt file.",
+            )
         raise HTTPException(status_code=400, detail=msg)
 
 
@@ -167,6 +175,8 @@ def _run_download(task: DownloadTask, url: str, quality: str, audio_only: bool, 
             "noplaylist": True,
             "outtmpl": output_template,
             "progress_hooks": [_make_progress_hook(task)],
+            "extractor_retries": 2,
+            "socket_timeout": 30,
             "cookiefile": settings.yt_dlp_cookies_file,
         }
 
@@ -215,8 +225,16 @@ def _run_download(task: DownloadTask, url: str, quality: str, audio_only: bool, 
     except TaskCancelledError:
         task.status = "cancelled"
     except DownloadError as e:
+        msg = str(e).strip() or "Download failed"
+        lowered = msg.lower()
+        if "sign in to confirm" in lowered and "bot" in lowered:
+            msg = (
+                "YouTube requires authentication. "
+                "The server owner must set YT_DLP_COOKIES_FILE with a valid cookies.txt file. "
+                "See: https://github.com/yt-dlp/yt-dlp/wiki/FAQ#how-do-i-pass-cookies-to-yt-dlp"
+            )
         task.status = "error"
-        task.error_msg = str(e).strip() or "Download failed"
+        task.error_msg = msg
     except Exception as e:
         task.status = "error"
         task.error_msg = (str(e)[:500]) if str(e) else "Unknown error"

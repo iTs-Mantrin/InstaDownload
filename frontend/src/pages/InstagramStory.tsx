@@ -1,10 +1,13 @@
-import { useState, useRef, useCallback } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { fetchInstagramStories, getProgress, getDownloadUrl, resolveApiUrl } from '../api/client.ts'
 import type { ProgressState } from '../api/client.ts'
 import ProgressBar from '../components/ProgressBar.tsx'
 import AdUnit from '../components/AdUnit.tsx'
 import { ADS } from '../ads.ts'
 import Seo from '../components/Seo.tsx'
+
+const MAX_POLLS = 240        // 240 polls × 500ms = 2 minutes timeout
+const POLL_INTERVAL_MS = 500
 
 export default function InstagramStory() {
   const [username, setUsername] = useState('')
@@ -13,6 +16,20 @@ export default function InstagramStory() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef<number>(0)
+  const mountedRef = useRef<boolean>(true)
+
+  // Cleanup on unmount
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [])
 
   const stopPolling = useCallback(() => {
     if (pollingRef.current) {
@@ -32,10 +49,21 @@ export default function InstagramStory() {
     try {
       const { task_id } = await fetchInstagramStories(username.trim())
       setTaskId(task_id)
-      
+
+      pollCountRef.current = 0
       pollingRef.current = setInterval(async () => {
+        pollCountRef.current++
+        if (pollCountRef.current > MAX_POLLS) {
+          stopPolling()
+          if (mountedRef.current) {
+            setError('Download timed out. The server may be experiencing issues.')
+          }
+          return
+        }
+
         try {
           const p = await getProgress(task_id, 'instagram')
+          if (!mountedRef.current) return
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
             if (p.status === 'error' || p.status === 'cancelled') {
@@ -44,10 +72,11 @@ export default function InstagramStory() {
             stopPolling()
           }
         } catch (err) {
+          if (!mountedRef.current) return
           setError(err instanceof Error ? err.message : 'Stories progress fetch failed')
           stopPolling()
         }
-      }, 500)
+      }, POLL_INTERVAL_MS)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch stories')
     } finally {
@@ -64,7 +93,7 @@ export default function InstagramStory() {
       <Seo
         title="Instagram Story Downloader - Download Stories Anonymously"
         description="Download Instagram stories and highlights for free. Just enter the username and fetch all active stories. Fast, private, and easy."
-        path="/instagram-story-downloader"
+        path="/instagram-story"
         keywords={['instagram story downloader', 'download instagram stories', 'instagram story saver', 'anonymous story viewer']}
       />
 

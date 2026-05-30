@@ -86,7 +86,7 @@ export default function YouTubeMp3() {
       <Seo
         title="YouTube to MP3 Converter - High Quality Audio Extraction"
         description="Convert YouTube videos to MP3 audio files for free. Choose from 128kbps, 192kbps, or 320kbps quality. Fast and easy to use."
-        path="/youtube-to-mp3"
+        path="/youtube-mp3"
         keywords={['youtube to mp3', 'convert youtube to mp3', 'youtube audio downloader', 'extract audio from youtube']}
       />
 

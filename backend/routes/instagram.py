@@ -151,6 +151,96 @@ async def get_profile_pic(username: str):
     raise HTTPException(status_code=404, detail="Profile not found or profile picture unavailable")
 
 
+# ── POST /api/instagram/user-feed ─────────────────────────
+
+@router.post("/user-feed")
+async def get_user_feed(payload: dict):
+    """Fetch all visible posts, reels & active stories for a given Instagram username.
+
+    Returns a flat list of media items — each with an `id`, `url`, `thumbnail`,
+    and `source` ("profile" or "story"). The frontend renders them as a grid
+    with per-item download buttons that reuse the existing download flow.
+    """
+    username = payload.get("username", "").strip()
+    if not username:
+        raise HTTPException(status_code=400, detail="username is required")
+
+    settings = get_settings()
+    media_list: list[dict] = []
+    seen_urls: set[str] = set()
+
+    # ── Helper to push a deduplicated entry ──
+    def add_entry(entry: dict, source: str) -> None:
+        url = (entry.get("webpage_url") or entry.get("url", "")).strip()
+        if not url or url in seen_urls:
+            return
+        seen_urls.add(url)
+        media_list.append({
+            "id": entry.get("id", ""),
+            "url": url,
+            "title": (entry.get("title") or "").strip() or "Instagram Media",
+            "thumbnail": entry.get("thumbnail") or "",
+            "duration": entry.get("duration"),
+            "source": source,
+        })
+
+    base_opts: dict = {
+        "quiet": True,
+        "extract_flat": True,
+        "skip_download": True,
+        "no_warnings": True,
+        "playlistend": 50,
+        "cookiefile": settings.yt_dlp_cookies_file,
+    }
+
+    # ── 1. Profile posts & reels ──
+    try:
+        profile_url = f"https://www.instagram.com/{username}/"
+        with YoutubeDL({**base_opts, "extract_flat": "in_playlist"}) as ydl:
+            info = ydl.extract_info(profile_url, download=False)
+
+        if isinstance(info, dict):
+            entries: list = info.get("entries") or []
+            for entry in entries:
+                if isinstance(entry, dict):
+                    add_entry(entry, "profile")
+    except DownloadError:
+        pass
+    except Exception:
+        pass
+
+    # ── 2. Active stories ──
+    try:
+        stories_url = f"https://www.instagram.com/stories/{username}/"
+        with YoutubeDL(base_opts) as ydl:
+            stories_info = ydl.extract_info(stories_url, download=False)
+
+        if isinstance(stories_info, dict):
+            entries = stories_info.get("entries") or []
+            for entry in entries:
+                if isinstance(entry, dict):
+                    add_entry(entry, "story")
+    except DownloadError:
+        pass
+    except Exception:
+        pass
+
+    if not media_list:
+        raise HTTPException(
+            status_code=404,
+            detail=(
+                f"No media found for '{username}'. "
+                "The account may be private, require authentication, or not exist."
+            ),
+        )
+
+    return {
+        "username": username,
+        "media": media_list,
+        "media_count": len(media_list),
+    }
+
+
 # ── Internal helpers ──────────────────────────────────────
 
 

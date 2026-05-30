@@ -3,6 +3,9 @@ import { startDownload, getProgress, getDownloadUrl, cancelTask, previewUrl, res
 import type { ProgressState, PreviewInfo, FormatInfo } from '../api/client.ts'
 import ProgressBar from './ProgressBar.tsx'
 
+const MAX_POLLS = 240        // 240 polls × 500ms = 2 minutes before giving up
+const POLL_INTERVAL_MS = 500
+
 interface YouTubeDownloaderProps {
   initialUrl?: string
   className?: string
@@ -64,6 +67,20 @@ export default function YouTubeDownloader({ initialUrl = '', className = '' }: Y
   const [error, setError] = useState('')
   const [taskId, setTaskId] = useState<string | null>(null)
   const pollingRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const pollCountRef = useRef<number>(0)
+  const mountedRef = useRef<boolean>(true)
+
+  // Cleanup polling + mark unmounted on unmount
+  useEffect(() => {
+    mountedRef.current = true
+    return () => {
+      mountedRef.current = false
+      if (pollingRef.current) {
+        clearInterval(pollingRef.current)
+        pollingRef.current = null
+      }
+    }
+  }, [])
 
   const videoId = useMemo(() => preview ? getYoutubeVideoId(preview.webpage_url) : null, [preview])
   const videoFormats = useMemo(() => preview ? dedupeFormats(preview.formats) : [], [preview])
@@ -118,9 +135,20 @@ export default function YouTubeDownloader({ initialUrl = '', className = '' }: Y
       setTaskId(task_id)
       setLoading(false)
 
+      pollCountRef.current = 0
       pollingRef.current = setInterval(async () => {
+        pollCountRef.current++
+        if (pollCountRef.current > MAX_POLLS) {
+          stopPolling()
+          if (mountedRef.current) {
+            setError('Download timed out. The server may need authentication cookies set up.')
+          }
+          return
+        }
+
         try {
           const p = await getProgress(task_id, 'youtube')
+          if (!mountedRef.current) return
           setProgress(p)
           if (p.status === 'done' || p.status === 'error' || p.status === 'cancelled') {
             if (p.status === 'error' || p.status === 'cancelled') {
@@ -129,10 +157,11 @@ export default function YouTubeDownloader({ initialUrl = '', className = '' }: Y
             stopPolling()
           }
         } catch (err) {
+          if (!mountedRef.current) return
           setError(err instanceof Error ? err.message : 'Progress fetch failed')
           stopPolling()
         }
-      }, 500)
+      }, POLL_INTERVAL_MS)
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Download failed')
       setLoading(false)
