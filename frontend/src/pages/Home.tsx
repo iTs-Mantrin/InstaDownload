@@ -213,7 +213,7 @@ export default function Home() {
     <div className="space-y-16">
       <Seo
         title="InstaDownload - YouTube & Instagram Downloader"
-        description="Download YouTube videos, MP3 audio, Instagram reels, posts, stories, and profile pictures with a fast mobile-first UI."
+        description="Download YouTube videos, MP3 audio, Instagram reels, posts, and stories with a fast mobile-first UI."
         path="/"
         keywords={['youtube downloader', 'instagram downloader', 'youtube to mp3', 'instagram reels downloader']}
         schema={{
@@ -402,7 +402,7 @@ export default function Home() {
                 { q: 'Is it safe?', a: 'All connections are encrypted via HTTPS. We don\'t track, store, or share your downloads.' },
                 { q: 'What platforms do you support?', a: 'We currently support YouTube, Instagram, Facebook, TikTok, and Pinterest. More platforms coming soon!' },
                 { q: 'Does Instagram support stories?', a: 'Yes, you can download Instagram stories by entering a username. Note: stories require the account to not be private.' },
-                { q: 'Can I download Instagram profile pictures?', a: 'Yes! Enter any Instagram username and we\'ll fetch their current profile picture in HD.' },
+                { q: 'Can I download all reels and posts from an Instagram user?', a: 'Yes! Use the User Feed feature on the Instagram page — enter any username to browse and download all their reels, posts, and stories with individual download buttons.' },
                 { q: 'Can I download Facebook videos?', a: 'Facebook video download is coming soon. In the meantime, try our YouTube or Instagram downloaders.' },
                 { q: 'Can I download TikTok videos?', a: 'TikTok video download is coming soon. Our platform will support downloading TikTok videos without watermarks.' },
               ].map((faq) => (

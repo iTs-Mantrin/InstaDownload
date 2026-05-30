@@ -20,7 +20,7 @@ export default function InstagramPage() {
   const tabLabel: Record<Tab, string> = {
     post: t('instagram.tabPost', 'Post / Reel'),
     stories: t('instagram.tabStories', 'Stories'),
-    user: t('instagram.tabUser', 'User'),
+    user: t('instagram.tabProfile', 'User Feed'),
   }
 
   return (
@@ -33,7 +33,7 @@ export default function InstagramPage() {
             {t('instagram.title', 'Instagram Downloader')}
           </h1>
           <p className="text-slate-500 dark:text-slate-400 mt-1">
-            {t('instagram.subtitle', 'Download posts, reels, stories & profile pictures')}
+            {t('instagram.subtitle', 'Download posts, reels & stories')}
           </p>
         </div>
 

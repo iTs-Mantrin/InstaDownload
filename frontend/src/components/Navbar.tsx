@@ -77,14 +77,8 @@ const NAV_ITEMS: NavItem[] = [
     path: '/youtube',
     children: [
       { labelKey: 'nav.youtubeSub.downloader', path: '/youtube', group: 'download' },
-      { labelKey: 'nav.youtubeSub.videoDownloader', path: '/youtube', group: 'download' },
       { labelKey: 'nav.youtubeSub.shortsDownloader', path: '/youtube', group: 'download' },
-      { labelKey: 'nav.youtubeSub.mp3', path: '/youtube-mp3', group: 'audio' },
-      { labelKey: 'nav.youtubeSub.audioDownloader', path: '/youtube-mp3', group: 'audio' },
-      { labelKey: 'nav.youtubeSub.songDownloader', path: '/youtube-mp3', group: 'audio' },
-      { labelKey: 'nav.youtubeSub.toMp4', path: '/youtube', group: 'more' },
-      { labelKey: 'nav.youtubeSub.musicDownloader', path: '/youtube-mp3', group: 'more' },
-      { labelKey: 'nav.youtubeSub.moviesDownloader', path: '/youtube', group: 'more' },
+      { labelKey: 'nav.youtubeSub.mp3', path: '/youtube-mp3', group: 'download' },
     ],
   },
   {
@@ -93,12 +87,7 @@ const NAV_ITEMS: NavItem[] = [
     path: '/instagram',
     children: [
       { labelKey: 'nav.instagramSub.downloader', path: '/instagram', group: 'download' },
-      { labelKey: 'nav.instagramSub.videoDownloader', path: '/instagram', group: 'download' },
-      { labelKey: 'nav.instagramSub.photoDownloader', path: '/instagram', group: 'download' },
-      { labelKey: 'nav.instagramSub.reelsDownloader', path: '/instagram', group: 'social' },
-      { labelKey: 'nav.instagramSub.story', path: '/instagram-story', group: 'social' },
-      { labelKey: 'nav.instagramSub.carouselDownloader', path: '/instagram', group: 'more' },
-      { labelKey: 'nav.instagramSub.profileDownloader', path: '/instagram', group: 'more' },
+      { labelKey: 'nav.instagramSub.story', path: '/instagram-story', group: 'download' },
     ],
   },
   { icon: <FacebookIcon />, labelKey: 'nav.facebook', disabled: true },
@@ -108,9 +97,6 @@ const NAV_ITEMS: NavItem[] = [
 
 const GROUP_LABELS: Record<string, string> = {
   download: 'Download',
-  audio: 'Audio',
-  social: 'Stories & Reels',
-  more: 'More',
 }
 
 // ── Helpers ──────────────────────────────────────────────────
