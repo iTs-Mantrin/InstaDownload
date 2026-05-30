@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from routes.downloader import router as downloader_router
+from routes.instagram import router as instagram_router
 from routes.youtube import router as youtube_router
 from utils.config import get_settings
 from utils.download_manager import manager as download_manager
@@ -38,6 +39,7 @@ app.add_middleware(
 
 app.include_router(downloader_router, prefix="/api", tags=["downloader"])
 app.include_router(youtube_router, prefix="/api", tags=["youtube-frontend"])
+app.include_router(instagram_router, prefix="/api", tags=["instagram"])
 
 
 @app.get("/health", tags=["health"])
