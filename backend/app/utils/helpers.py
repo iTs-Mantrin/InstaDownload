@@ -137,6 +137,19 @@ def apply_cookies(opts: dict, download: bool = False) -> None:
     opts["extractor_args"] = extractor_args
 
 
+def strip_youtube_tracking(url: str) -> str:
+    """Remove tracking parameters (si, etc.) from YouTube URLs."""
+    from urllib.parse import urlparse, urlunparse, parse_qs, urlencode
+    parsed = urlparse(url.strip())
+    query = parse_qs(parsed.query, keep_blank_values=True)
+    # Remove known tracking params
+    for param in ("si", "feature", "utm_source", "utm_medium", "utm_campaign"):
+        query.pop(param, None)
+    # Rebuild with cleaned query
+    cleaned_query = urlencode(query, doseq=True)
+    return urlunparse(parsed._replace(query=cleaned_query))
+
+
 def clean_old_files(directory: str, max_age_minutes: int = 30):
     """Remove files older than max_age_minutes from directory."""
     cutoff = time.time() - (max_age_minutes * 60)

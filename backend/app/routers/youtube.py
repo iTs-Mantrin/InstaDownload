@@ -30,9 +30,11 @@ def preview_youtube(url: str = Body(..., embed=True)):
     """Get video metadata before downloading."""
     if not is_valid_url(url) or not is_youtube_url(url):
         raise HTTPException(400, "Invalid YouTube URL")
-    info = YouTubeService.extract_info(url)
+    from app.utils.helpers import strip_youtube_tracking
+    clean_url = strip_youtube_tracking(url)
+    info = YouTubeService.extract_info(clean_url)
     if not info:
-        raise HTTPException(400, "Could not fetch video info")
+        raise HTTPException(400, "Could not fetch video info. This video may be geo-restricted — try adding YouTube cookies (see docs).")
     return info
 
 

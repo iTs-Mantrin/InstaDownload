@@ -160,6 +160,9 @@ class YouTubeService:
                     return result
         except Exception as exc:
             logger.error("In-process preview failed: %s", exc)
+            # Log the actual error for debugging
+            import traceback
+            logger.error("Traceback:\n%s", traceback.format_exc())
         return None
 
     @staticmethod
